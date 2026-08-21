@@ -1,7 +1,7 @@
 module telega.helpers;
 
 import telega.botapi : BotApi;
-import telega.telegram.basic : UpdateType, Update, getUpdates;
+import telega.telegram.legacy.basic : UpdateType, Update, getUpdates;
 
 class UpdatesRange
 {

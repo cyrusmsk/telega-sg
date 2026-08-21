@@ -1,0 +1,9 @@
+{
+	"name": "pollbot",
+	"description": "A simple telegram poll bot",
+	"dependencies": {
+		"telega": {
+			"path": "../../../"
+		}
+	}
+}

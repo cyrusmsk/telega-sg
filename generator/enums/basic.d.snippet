@@ -1,0 +1,118 @@
+/// Enum of chat types
+enum ChatType : string
+{
+    @serdeKeys("private")
+    Private    = "private",
+    @serdeKeys("group")
+    Group      = "group",
+    @serdeKeys("supergroup")
+    Supergroup = "supergroup",
+    @serdeKeys("channel")
+    Channel    = "channel"
+}
+
+/// Parse modes for text entities
+enum ParseMode : string
+{
+    Markdown   = "Markdown",
+    MarkdownV2 = "MarkdownV2",
+    HTML       = "HTML",
+    None       = "",
+}
+
+/// Type of the message text entity
+enum MessageEntityType : string
+{
+    @serdeKeys("mention")
+    Mention          = "mention",
+    @serdeKeys("hashtag")
+    Hashtag          = "hashtag",
+    @serdeKeys("cashtag")
+    Cashtag          = "cashtag",
+    @serdeKeys("bot_command")
+    BotCommand       = "bot_command",
+    @serdeKeys("url")
+    Url              = "url",
+    @serdeKeys("email")
+    Email            = "email",
+    @serdeKeys("phone_number")
+    PhoneNumber      = "phone_number",
+    @serdeKeys("bold")
+    Bold             = "bold",
+    @serdeKeys("italic")
+    Italic           = "italic",
+    @serdeKeys("underline")
+    Underline        = "underline",
+    @serdeKeys("strikethrough")
+    Strikethrough    = "strikethrough",
+    @serdeKeys("spoiler")
+    Spoiler          = "spoiler",
+    @serdeKeys("code")
+    Code             = "code",
+    @serdeKeys("pre")
+    Pre              = "pre",
+    @serdeKeys("text_link")
+    TextLink         = "text_link",
+    @serdeKeys("text_mention")
+    TextMension      = "text_mention",
+    @serdeKeys("custom_emoji")
+    CustomEmoji      = "custom_emoji",
+    @serdeKeys("blockquote")
+    Blockquote       = "blockquote",
+    @serdeKeys("expandable_blockquote")
+    ExpandableBlockquote = "expandable_blockquote",
+}
+
+/// Type of action to broadcast
+enum ChatAction : string
+{
+    @serdeKeys("typing")
+    Typing                = "typing",
+    @serdeKeys("upload_photo")
+    UploadPhoto           = "upload_photo",
+    @serdeKeys("record_video")
+    RecordVideo           = "record_video",
+    @serdeKeys("upload_video")
+    UploadVideo           = "upload_video",
+    @serdeKeys("record_voice")
+    RecordVoice           = "record_voice",
+    @serdeKeys("upload_voice")
+    UploadVoice           = "upload_voice",
+    @serdeKeys("upload_document")
+    UploadDocument        = "upload_document",
+    @serdeKeys("choose_sticker")
+    ChooseSticker         = "choose_sticker",
+    @serdeKeys("find_location")
+    FindLocation          = "find_location",
+    @serdeKeys("record_video_note")
+    RecordVideoNote       = "record_video_note",
+    @serdeKeys("upload_video_note")
+    UploadVideoNote       = "upload_video_note",
+}
+
+/// Type of an update the bot can receive
+enum UpdateType : string
+{
+    @serdeKeys("message")
+    Message               = "message",
+    @serdeKeys("edited_message")
+    EditedMessage         = "edited_message",
+    @serdeKeys("channel_post")
+    ChannelPost           = "channel_post",
+    @serdeKeys("edited_channel_post")
+    EditedChannelPost     = "edited_channel_post",
+    @serdeKeys("inline_query")
+    InlineQuery           = "inline_query",
+    @serdeKeys("chosen_inline_result")
+    ChosenInlineResult    = "chosen_inline_result",
+    @serdeKeys("callback_query")
+    CallbackQuery         = "callback_query",
+    @serdeKeys("shipping_query")
+    ShippingQuery         = "shipping_query",
+    @serdeKeys("pre_checkout_query")
+    PreCheckoutQuery      = "pre_checkout_query",
+    @serdeKeys("poll")
+    Poll                  = "poll",
+    @serdeKeys("poll_answer")
+    PollAnswer            = "poll_answer",
+}

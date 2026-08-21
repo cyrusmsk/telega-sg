@@ -23,11 +23,28 @@ shell-ldc:
 dc-build:
 	$(DC) build
 
+generate-api:
+	cd generator && dub build && ./bin/telega-api-generator --file fixtures/botapi.html --target-dir ../source/telega/telegram/generated
+
+generate-api-live:
+	cd generator && dub build && ./bin/telega-api-generator --target-dir ../source/telega/telegram/generated
+
+check-generated-api: generate-api
+	git diff --exit-code -- source/telega/telegram/generated || (echo "Generated code is out of date. Run 'make generate-api' and commit." && exit 1)
+
+# Generated API examples
 run-example-echobot:
 	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/echobot --rm example dub
 
 run-example-keyboard:
 	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/keyboard --rm example dub
 
-run-example-pollbot:
-	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/pollbot --rm example dub
+# Legacy API examples
+run-example-legacy-echobot:
+	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/legacy/echobot --rm example dub
+
+run-example-legacy-keyboard:
+	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/legacy/keyboard --rm example dub
+
+run-example-legacy-pollbot:
+	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/legacy/pollbot --rm example dub
