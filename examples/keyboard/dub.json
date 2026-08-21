@@ -3,14 +3,11 @@
 	"description": "Keyboard usage example",
 
 	"dependencies": {
-		"telega": {"version": "~master", "path": "../../"},
-		"vibe-d:tls": ">=0.0.0"
+		"telega": {"version": "~master", "path": "../../"}
 	},
 
 	"subConfigurations": {
-		"telega": "requests-driver",
-		"requests": "vibed",
-		"vibe-d:tls": "openssl-1.1"
+		"telega": "requests-driver"
 	},
 
 	"versions": ["VibeDisableCommandLineParsing"]

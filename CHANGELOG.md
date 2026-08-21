@@ -3,6 +3,8 @@
 ## [0.3.0] - 2026-08-21
 ### Changed
 - Updated asdf to 0.8.0 (finishes #72, #73)
+- Updated requests to 2.2.x
+- Replaced vibe-d:http with the standalone vibe-http package in the default configuration
 - dub.sdl rewritten as dub.json
 - Migrated to the asdf serde API: `@serdeProxy`, `@serdeIgnore`, `SerdeException deserializeFromAsdf`
 - All optional fields are annotated with `@serdeOptional` (asdf 0.6+ treats unannotated members as required)
