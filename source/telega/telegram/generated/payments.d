@@ -222,6 +222,12 @@ bool answerPreCheckoutQuery(BotApi api, AnswerPreCheckoutQueryMethod method)
     return api.callMethod!(bool)(method);
 }
 
+struct GetMyStarBalanceMethod
+{
+    mixin TelegramMethod!"/getMyStarBalance";
+}
+
+
 /++ Returns the bot's Telegram Star transactions in chronological order. On success, returns a StarTransactions object. +/
 struct GetStarTransactionsMethod
 {

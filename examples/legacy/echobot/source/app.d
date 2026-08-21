@@ -1,7 +1,8 @@
 import vibe.core.core : runApplication, runTask, disableDefaultSignalHandlers;
-import vibe.core.log : setLogLevel, logInfo, logDiagnostic, LogLevel;
+import vibe.core.log : setLogLevel, logInfo, LogLevel;
 import std.process : environment;
 import std.exception : enforce;
+import std.functional : toDelegate;
 
 int main(string[] args)
 {
@@ -23,43 +24,26 @@ int main(string[] args)
 void listenUpdates(string token)
 {
     import telega.botapi : BotApi;
-    import telega.telegram.generated.webhook : Update, GetUpdatesMethod, getUpdates;
-    import telega.telegram.generated.basic :
-        SendMessageMethod, sendMessage;
-    import std.algorithm.iteration : each;
+    import telega.telegram.legacy.basic : Update, getUpdates, sendMessage;
+    import std.algorithm.iteration : filter, each;
+    import std.algorithm.comparison : max;
 
+    int offset;
     auto api = new BotApi(token);
-
-    GetUpdatesMethod gu;
-    gu.limit = 100;
-    gu.timeout = 30;
-
-    long offset;
 
     while (true)
     {
-        gu.offset = offset;
-
-        getUpdates(api, gu)
+        api.getUpdates(offset)
             .each!((Update u) {
                 // we need all updates with text message
                 if (!u.message.isNull && !u.message.get.text.isNull)
                 {
                     logInfo("Text from %s: %s", u.message.get.chat.id, u.message.get.text);
-
-                    SendMessageMethod sm;
-                    sm.chat_id = u.message.get.chat.id;
-                    sm.text = u.message.get.text.get;
-
-                    sendMessage(api, sm);
-                }
-                else
-                {
-                    logDiagnostic("Update is not a text message, skipping");
+                    api.sendMessage(u.message.get.chat.id, u.message.get.text.get);
                 }
 
                 // mark update as processed
-                offset = offset > u.update_id + 1 ? offset : u.update_id + 1;
+                offset = max(offset, u.id) + 1;
             });
     }
 }

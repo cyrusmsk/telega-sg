@@ -3934,6 +3934,24 @@ struct InputStoryContentVideo
     Nullable!(bool) is_animation;
 }
 
+struct GetMeMethod
+{
+    mixin TelegramMethod!"/getMe";
+}
+
+
+struct LogOutMethod
+{
+    mixin TelegramMethod!"/logOut";
+}
+
+
+struct CloseMethod
+{
+    mixin TelegramMethod!"/close";
+}
+
+
 /++ Use this method to send text messages. On success, the sent Message is returned. +/
 struct SendMessageMethod
 {
@@ -5921,6 +5939,12 @@ bool deleteChatStickerSet(BotApi api, DeleteChatStickerSetMethod method)
     return api.callMethod!(bool)(method);
 }
 
+struct GetForumTopicIconStickersMethod
+{
+    mixin TelegramMethod!"/getForumTopicIconStickers";
+}
+
+
 /++ Use this method to create a topic in a forum supergroup chat or a private chat with a user. In the case of a supergroup chat the bot must be an administrator in the chat for this to work and must have the can_manage_topics administrator right. Returns information about the created topic as a ForumTopic object. +/
 struct CreateForumTopicMethod
 {
@@ -6428,6 +6452,12 @@ bool setMyProfilePhoto(BotApi api, SetMyProfilePhotoMethod method)
     return api.callMethod!(bool)(method);
 }
 
+struct RemoveMyProfilePhotoMethod
+{
+    mixin TelegramMethod!"/removeMyProfilePhoto";
+}
+
+
 /++ Use this method to change the bot's menu button in a private chat, or the default menu button. Returns True on success. +/
 struct SetChatMenuButtonMethod
 {
@@ -6488,6 +6518,12 @@ ChatAdministratorRights getMyDefaultAdministratorRights(BotApi api, GetMyDefault
 {
     return api.callMethod!(ChatAdministratorRights)(method);
 }
+
+struct GetAvailableGiftsMethod
+{
+    mixin TelegramMethod!"/getAvailableGifts";
+}
+
 
 /++ Sends a gift to the given user or channel chat. The gift can't be converted to Telegram Stars by the receiver. Returns True on success. +/
 struct SendGiftMethod

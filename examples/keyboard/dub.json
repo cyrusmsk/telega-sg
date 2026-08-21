@@ -1,6 +1,6 @@
 {
 	"name": "keyboard",
-	"description": "Keyboard usage example",
+	"description": "Keyboard usage example (generated API)",
 
 	"dependencies": {
 		"telega": {"version": "~master", "path": "../../"}
@@ -8,7 +8,5 @@
 
 	"subConfigurations": {
 		"telega": "requests-driver"
-	},
-
-	"versions": ["VibeDisableCommandLineParsing"]
+	}
 }

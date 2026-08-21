@@ -294,6 +294,12 @@ void handleTableless(ref PendingEntity pending, TelegramApi api)
     auto entity = pending.entity;
     auto text = pending.paragraphs.join(" ").toLower();
 
+    // Methods without a parameter table simply take no parameters
+    if (entity.kind == EntityType.method) {
+        api.entities ~= entity;
+        return;
+    }
+
     if (text.canFind("no information")) {
         entity.isEmptyObject = true;
         api.entities ~= entity;
@@ -302,7 +308,7 @@ void handleTableless(ref PendingEntity pending, TelegramApi api)
 
     // Family names must look like entity names; rejects headings such as
     // "Sending files" or "Formatting options"
-    if (pending.links.length >= 2 && isIdentifier(entity.name)) {
+    if (entity.kind == EntityType.type && pending.links.length >= 2 && isIdentifier(entity.name)) {
         import std.algorithm.sorting : sort;
         import std.array : array;
 

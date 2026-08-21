@@ -3,6 +3,6 @@
 	"description": "A simple telegram poll bot",
 
 	"dependencies": {
-		"telega": {"version": "~master", "path": "../../"}
+		"telega": {"version": "~master", "path": "../../../"}
 	}
 }

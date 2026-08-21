@@ -23,3 +23,4 @@ public import telega.telegram.generated.payments;
 public import telega.telegram.generated.passport;
 public import telega.telegram.generated.games;
 public import telega.telegram.generated.poll;
+public import telega.telegram.generated.webhook;

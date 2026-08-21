@@ -13,5 +13,19 @@
  },
  "stringImportPaths": [
   "."
+ ],
+ "configurations": [
+  {
+   "name": "application",
+   "excludedSourceFiles": [
+    "source/dbg.d"
+   ]
+  },
+  {
+   "name": "dbg",
+   "excludedSourceFiles": [
+    "source/app.d"
+   ]
+  }
  ]
 }

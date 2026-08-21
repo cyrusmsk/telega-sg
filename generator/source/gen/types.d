@@ -8,7 +8,6 @@ immutable string[] SKIPPED_SECTIONS = [
     "Recent changes",
     "Authorizing your bot",
     "Making requests",
-    "Getting updates",
     "Local Bot API Server",
     "Test Environment",
     "Formatting options",
