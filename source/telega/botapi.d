@@ -1,8 +1,8 @@
 module telega.botapi;
 
 import vibe.core.log;
-import asdf : Asdf, serializedAs;
-import asdf.serialization : deserialize;
+import asdf : Asdf;
+import asdf.serialization : deserialize, serdeProxy, serdeOptional, SerdeException, deserializeScopedString;
 import std.typecons : Nullable;
 import std.exception : enforce;
 import telega.exception : TelegramException;
@@ -21,7 +21,7 @@ enum HTTPMethod
 	POST
 }
 
-@serializedAs!ChatIdProxy
+@serdeProxy!ChatIdProxy
 struct ChatId
 {
     import std.conv;
@@ -86,9 +86,17 @@ struct ChatIdProxy
         return id;
     }
 
-    static ChatIdProxy deserialize(Asdf v)
+    SerdeException deserializeFromAsdf(Asdf v)
     {
-        return ChatIdProxy(ChatId(cast(string)v));
+        string id;
+
+        if (auto err = deserializeScopedString(v, id)) {
+            return err;
+        }
+
+        this.id = ChatId(id);
+
+        return null;
     }
 }
 
@@ -129,6 +137,14 @@ unittest
         .assertEquals("45");
 }
 
+unittest
+{
+    ChatId c = deserialize!ChatId(`"@chatname"`);
+
+    c.id
+        .assertEquals("@chatname");
+}
+
 
 class TelegramBotApiException : TelegramException
 {
@@ -147,13 +163,13 @@ enum isTelegramId(T) = isSomeString!T || isIntegral!T || is(T == ChatId);
 
 mixin template TelegramMethod(string path, HTTPMethod method = HTTPMethod.POST)
 {
-    import asdf.serialization : serializationIgnore;
+    import asdf.serialization : serdeIgnore;
 
     public:
-        @serializationIgnore
+        @serdeIgnore
         immutable string      _path       = path;
 
-        @serializationIgnore
+        @serdeIgnore
         immutable HTTPMethod  _httpMethod = method;
 }
 
@@ -181,7 +197,11 @@ class BotApi
         {
             bool   ok;
             T      result;
+
+            @serdeOptional
             ushort error_code;
+
+            @serdeOptional
             string description;
         }
 

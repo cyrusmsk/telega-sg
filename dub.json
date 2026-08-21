@@ -1,0 +1,38 @@
+{
+	"name": "telega",
+	"description": "Telegram Bot API implementation",
+	"authors": ["Pavel Chebotarev"],
+	"license": "MIT",
+
+	"dependencies": {
+		"vibe-core": ">=1.9.0 <3.0.0-0",
+		"asdf": "~>0.8.0",
+		"dests": "~>0.3.1"
+	},
+
+	"buildRequirements": ["disallowInlining"],
+
+	"configurations": [
+		{
+			"name": "default",
+			"targetType": "library",
+			"dependencies": {
+				"vibe-d:http": ">=0.8.6 <0.10.0-0"
+			},
+			"versions": ["VibeDisableCommandLineParsing", "TelegaVibedDriver", "VibeUseOpenSSL11"]
+		},
+		{
+			"name": "requests-driver",
+			"targetType": "library",
+			"dependencies": {
+				"requests": "~>2.0.0",
+				"socks-client": "~>0.2.0"
+			},
+			"subConfigurations": {
+				"requests": "std",
+				"socks-client": "std"
+			},
+			"versions": ["TelegaRequestsDriver", "VibeUseOpenSSL11"]
+		}
+	]
+}

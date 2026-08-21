@@ -1,7 +1,7 @@
 module telega.serialization;
 
 import std.meta : AliasSeq, staticIndexOf;
-import asdf : Asdf, serializeValue, serializeToAsdf, serializeToJson, serializedAs, parseJson;
+import asdf : Asdf, serializeValue, serializeToAsdf, serializeToJson, parseJson;
 
 version (unittest)
 {
@@ -36,42 +36,6 @@ unittest
     s.a = "123";
     s.serializeToJson()
         .assertEquals(`{"a":"123"}`);
-}
-
-/**
- * Proxy struct for serializing string enums as their values, not key names
- */
-@serializedAs!string
-struct SerializableEnumProxy(T)
-    if (is(T : string))
-{
-    T e;
-
-    this(T e)
-    {
-        this.e = e;
-    }
-
-    string toString()
-    {
-        return cast(string)e;
-    }
-}
-
-version (unittest)
-{
-    @serializedAs!(SerializableEnumProxy!E)
-    static enum E : string
-    {
-        Val1 = "value_1"
-    }
-}
-
-unittest
-{
-    E e = E.Val1;
-
-    assertEquals(e.serializeToJson(), `"value_1"`);
 }
 
 void removeNulledNodes(ref Asdf a)
@@ -160,11 +124,6 @@ struct JsonableAlgebraicProxy(Typelist ...)
         if (staticIndexOf!(T, Typelist) >= 0)
     {
         this.value = value;
-    }
-
-    static Algebraic!Typelist deserialize(Asdf data)
-    {
-        assert(false, "Deserialization of a value is not implemented.");
     }
 
     void serialize(S)(ref S serializer)

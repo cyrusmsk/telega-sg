@@ -5,11 +5,13 @@ import std.meta : AliasSeq;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod;
 import telega.telegram.basic : ParseMode, InlineKeyboardMarkup, InputMessageContent, User, Location;
 import telega.serialization : JsonableAlgebraicProxy;
+import asdf.serialization : serdeOptional;
 
 struct InlineQuery
 {
     string id;
     User from;
+    @serdeOptional
     Nullable!Location location;
     string query;
     string offset;
@@ -28,7 +30,9 @@ alias InlineQueryResult = JsonableAlgebraicProxy!InlineQueryResultStructs;
 
 mixin template InlineQueryFields()
 {
+    @serdeOptional
     Nullable!InlineKeyboardMarkup reply_markup;
+    @serdeOptional
     Nullable!InputMessageContent  input_message_content;
 }
 
@@ -37,13 +41,20 @@ struct InlineQueryResultArticle
     string type = "article";
     string id;
     string title;
+    @serdeOptional
     Nullable!string url;
+    @serdeOptional
     Nullable!bool hide_url;
+    @serdeOptional
     Nullable!string description;
+    @serdeOptional
     Nullable!string thumb_url;
+    @serdeOptional
     Nullable!uint thumb_width;
+    @serdeOptional
     Nullable!uint thumb_height;
 
+    @serdeOptional
     Nullable!InlineKeyboardMarkup reply_markup;
     InputMessageContent  input_message_content; // can't be nullable
 }
@@ -54,11 +65,17 @@ struct InlineQueryResultPhoto
     string id;
     string photo_url;
     string thumb_url;
+    @serdeOptional
     Nullable!uint photo_width;
+    @serdeOptional
     Nullable!uint photo_height;
+    @serdeOptional
     Nullable!string title;
+    @serdeOptional
     Nullable!string description;
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -69,12 +86,19 @@ struct InlineQueryResultGif
     string type = "gif";
     string id;
     string gif_url;
+    @serdeOptional
     Nullable!uint gif_width;
+    @serdeOptional
     Nullable!uint gif_height;
+    @serdeOptional
     Nullable!uint gif_duration;
+    @serdeOptional
     Nullable!string thumb_url;
+    @serdeOptional
     Nullable!string title;
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -85,12 +109,19 @@ struct InlineQueryResultMpeg4Gif
     string type ="mpeg4_gif";
     string id;
     string mpeg4_url;
+    @serdeOptional
     Nullable!uint mpeg4_width;
+    @serdeOptional
     Nullable!uint mpeg4_height;
+    @serdeOptional
     Nullable!uint mpeg4_duration;
+    @serdeOptional
     Nullable!string thumb_url;
+    @serdeOptional
     Nullable!string title;
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -104,11 +135,17 @@ struct InlineQueryResultVideo
     string mime_type;
     string thumb_url;
     string title;
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!uint video_width;
+    @serdeOptional
     Nullable!uint video_height;
+    @serdeOptional
     Nullable!uint video_duration;
+    @serdeOptional
     Nullable!string description;
 
     mixin InlineQueryFields;
@@ -120,9 +157,13 @@ struct InlineQueryResultAudio
     string    id;
     string    audio_url;
     string    title;
+    @serdeOptional
     Nullable!string    caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!string    performer;
+    @serdeOptional
     Nullable!uint      audio_duration;
 
     mixin InlineQueryFields;
@@ -134,8 +175,11 @@ struct InlineQueryResultVoice
     string    id;
     string    voice_url;
     string    title;
+    @serdeOptional
     Nullable!string    caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!uint      voice_duration;
 
     mixin InlineQueryFields;
@@ -146,13 +190,21 @@ struct InlineQueryResultDocument
     string    type = "document";
     string    id;
     string    title;
+    @serdeOptional
     Nullable!string    caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!string    document_url;
+    @serdeOptional
     Nullable!string    mime_type;
+    @serdeOptional
     Nullable!string    description;
+    @serdeOptional
     Nullable!string    thumb_url;
+    @serdeOptional
     Nullable!uint      thumb_width;
+    @serdeOptional
     Nullable!uint      thumb_height;
 
     mixin InlineQueryFields;
@@ -165,9 +217,13 @@ struct InlineQueryResultLocation
     float latitude;
     float longitude;
     string title;
+    @serdeOptional
     Nullable!uint live_period;
+    @serdeOptional
     Nullable!string thumb_url;
+    @serdeOptional
     Nullable!uint thumb_width;
+    @serdeOptional
     Nullable!uint thumb_height;
 
     mixin InlineQueryFields;
@@ -181,10 +237,15 @@ struct InlineQueryResultVenue
     float longitude;
     string title;
     string address;
+    @serdeOptional
     Nullable!string foursquare_id;
+    @serdeOptional
     Nullable!string foursquare_type;
+    @serdeOptional
     Nullable!string thumb_url;
+    @serdeOptional
     Nullable!uint thumb_width;
+    @serdeOptional
     Nullable!uint thumb_height;
 
     mixin InlineQueryFields;
@@ -196,10 +257,15 @@ struct InlineQueryResultContact
     string id;
     string phone_number;
     string first_name;
+    @serdeOptional
     Nullable!string last_name;
+    @serdeOptional
     Nullable!string vcard;
+    @serdeOptional
     Nullable!string thumb_url;
+    @serdeOptional
     Nullable!uint thumb_width;
+    @serdeOptional
     Nullable!uint thumb_height;
 
     mixin InlineQueryFields;
@@ -210,6 +276,7 @@ struct InlineQueryResultGame
     string type = "game";
     string id;
     string game_short_name;
+    @serdeOptional
     Nullable!InlineKeyboardMarkup reply_markup;
 }
 
@@ -219,9 +286,13 @@ struct InlineQueryResultCachedPhoto
     string type = "photo";
     string id;
     string photo_file_id;
+    @serdeOptional
     Nullable!string title;
+    @serdeOptional
     Nullable!string description;
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -232,8 +303,11 @@ struct InlineQueryResultCachedGif
     string type = "gif";
     string id;
     string gif_file_id;
+    @serdeOptional
     Nullable!string title;
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -244,8 +318,11 @@ struct InlineQueryResultCachedMpeg4Gif
     string type = "mpeg4_gif";
     string id;
     string mpeg4_file_id;
+    @serdeOptional
     Nullable!string title;
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -266,8 +343,11 @@ struct InlineQueryResultCachedDocument
     string    id;
     string    title;
     string    document_file_id;
+    @serdeOptional
     Nullable!string    description;
+    @serdeOptional
     Nullable!string    caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -279,8 +359,11 @@ struct InlineQueryResultCachedVideo
     string    id;
     string    video_file_id;
     string    title;
+    @serdeOptional
     Nullable!string    description;
+    @serdeOptional
     Nullable!string    caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -292,7 +375,9 @@ struct InlineQueryResultCachedVoice
     string    id;
     string    voice_file_id;
     string    title;
+    @serdeOptional
     Nullable!string    caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;
@@ -304,7 +389,9 @@ struct InlineQueryResultCachedAudio
     string type = "audio";
     string    id;
     string    audio_file_id;
+    @serdeOptional
     Nullable!string    caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 
     mixin InlineQueryFields;

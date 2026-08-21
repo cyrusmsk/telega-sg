@@ -2,6 +2,7 @@ module telega.telegram.updmessages;
 
 import std.typecons : Nullable, nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, ChatId, isTelegramId;
+import asdf.serialization : serdeOptional;
 import telega.telegram.basic : ParseMode, ReplyMarkup, ForceReply, ReplyKeyboardMarkup, ReplyKeyboardRemove,
         InlineKeyboardMarkup, isReplyMarkup, InputMedia, InputMediaPhoto;
 
@@ -18,6 +19,7 @@ struct EditMessageTextMethod
     uint        message_id;
     string      inline_message_id;
     string      text;
+    @serdeOptional
     Nullable!ParseMode   parse_mode;
     bool        disable_web_page_preview;
     ReplyMarkup reply_markup;
@@ -31,6 +33,7 @@ struct EditMessageCaptionMethod
     uint        message_id;
     string      inline_message_id;
     string      caption;
+    @serdeOptional
     Nullable!ParseMode   parse_mode;
     ReplyMarkup reply_markup;
 }
@@ -43,6 +46,7 @@ struct EditMessageMediaMethod
     uint       message_id;
     string     inline_message_id;
     InputMedia media;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -72,6 +76,7 @@ struct EditMessageReplyMarkupMethod
     ChatId      chat_id;
     uint        message_id;
     string      inline_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 

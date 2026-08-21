@@ -1,8 +1,9 @@
 module telega.telegram.basic;
 
 import std.typecons : Nullable, nullable;
-import asdf : Asdf, serializedAs, deserialize;
-import telega.serialization : JsonableAlgebraicProxy, SerializableEnumProxy, serializeToJsonString;
+import asdf : Asdf, deserialize, serializeToJson;
+import asdf.serialization : serdeOptional, serdeKeys;
+import telega.serialization : JsonableAlgebraicProxy, serializeToJsonString;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, ChatId, isTelegramId;
 import telega.telegram.stickers : Sticker;
 import telega.telegram.games : Game, Animation, CallbackGame;
@@ -26,8 +27,11 @@ struct User
     bool   is_bot;
     string first_name;
 
+    @serdeOptional
     Nullable!string last_name;
+    @serdeOptional
     Nullable!string username;
+    @serdeOptional
     Nullable!string language_code;
 }
 
@@ -62,49 +66,53 @@ unittest
 
 
 
-@serializedAs!ChatTypeProxy
 enum ChatType : string
 {
+    @serdeKeys("private")
     Private    = "private",
+    @serdeKeys("group")
     Group      = "group",
+    @serdeKeys("supergroup")
     Supergroup = "supergroup",
+    @serdeKeys("channel")
     Channel    = "channel"
 }
 
-struct ChatTypeProxy
+unittest
 {
-    ChatType t;
+    ChatType t = deserialize!ChatType(`"supergroup"`);
 
-    this(ChatType type)
-    {
-        t = type;
-    }
+    t
+        .assertEquals(ChatType.Supergroup);
 
-    ChatType opCast(T : ChatType)()
-    {
-        return t;
-    }
-
-    static ChatTypeProxy deserialize(Asdf v)
-    {
-        return ChatTypeProxy(cast(ChatType)cast(string)v);
-    }
+    ChatType.Supergroup.serializeToJson()
+        .assertEquals(`"supergroup"`);
 }
 
 struct Chat
 {
     long id;
     ChatType type;
+    @serdeOptional
     Nullable!string title;
+    @serdeOptional
     Nullable!string first_name;
+    @serdeOptional
     Nullable!string last_name;
+    @serdeOptional
     Nullable!string username;
+    @serdeOptional
     Nullable!bool all_members_are_administrators;
+    @serdeOptional
     Nullable!ChatPhoto photo;
+    @serdeOptional
     Nullable!string description;
+    @serdeOptional
     Nullable!string invite_link;
     // TODO Nullable!Message pinned_message;
+    @serdeOptional
     Nullable!string sticker_set_name;
+    @serdeOptional
     Nullable!bool can_set_sticker_set;
 }
 
@@ -130,47 +138,87 @@ struct Message
     uint                 message_id;
     uint                 date;
     Chat                 chat;
+    @serdeOptional
     Nullable!User        from;
+    @serdeOptional
     Nullable!User        forward_from;
+    @serdeOptional
     Nullable!Chat        forward_from_chat;
+    @serdeOptional
     Nullable!uint        forward_from_message_id;
+    @serdeOptional
     Nullable!string      forward_signature;
+    @serdeOptional
     Nullable!string      forward_sender_name;
+    @serdeOptional
     Nullable!uint        forward_date;
+    @serdeOptional
     Nullable!uint        edit_date;
+    @serdeOptional
     Nullable!string      media_group_id;
+    @serdeOptional
     Nullable!string      author_signature;
+    @serdeOptional
     Nullable!string      text;
+    @serdeOptional
     Nullable!(MessageEntity[]) entities;
+    @serdeOptional
     Nullable!(MessageEntity[]) caption_entities;
+    @serdeOptional
     Nullable!Audio             audio;
+    @serdeOptional
     Nullable!Document          document;
+    @serdeOptional
     Nullable!Animation         animation;
+    @serdeOptional
     Nullable!Game              game;
+    @serdeOptional
     Nullable!Poll              poll;
+    @serdeOptional
     Nullable!(PhotoSize[])     photo;
+    @serdeOptional
     Nullable!Sticker           sticker;
+    @serdeOptional
     Nullable!Video             video;
+    @serdeOptional
     Nullable!Voice             voice;
+    @serdeOptional
     Nullable!VideoNote         video_note;
     // TODO Nullable!Message   reply_to_message;
     // TODO Nullable!Message   pinned_message;
+    @serdeOptional
     Nullable!string            caption;
+    @serdeOptional
     Nullable!Contact           contact;
+    @serdeOptional
     Nullable!Location          location;
+    @serdeOptional
     Nullable!Venue             venue;
+    @serdeOptional
     Nullable!(User[])          new_chat_members;
+    @serdeOptional
     Nullable!User              left_chat_member;
+    @serdeOptional
     Nullable!string            new_chat_title;
+    @serdeOptional
     Nullable!(PhotoSize[])     new_chat_photo;
+    @serdeOptional
     Nullable!bool              delete_chat_photo;
+    @serdeOptional
     Nullable!bool              group_chat_created;
+    @serdeOptional
     Nullable!bool              supergroup_chat_created;
+    @serdeOptional
     Nullable!bool              channel_chat_created;
+    @serdeOptional
     Nullable!long              migrate_to_chat_id;
+    @serdeOptional
     Nullable!long              migrate_from_chat_id;
+    @serdeOptional
     Nullable!Invoice           invoice;
+    @serdeOptional
     Nullable!SuccessfulPayment successful_payment;
+    @serdeOptional
     Nullable!string            connected_website;
 
     @property
@@ -219,17 +267,28 @@ unittest
 struct Update
 {
     uint             update_id;
+    @serdeOptional
     Nullable!Message message;
 
+    @serdeOptional
     Nullable!Message edited_message;
+    @serdeOptional
     Nullable!Message channel_post;
+    @serdeOptional
     Nullable!Message edited_channel_post;
+    @serdeOptional
     Nullable!InlineQuery        inline_query;
+    @serdeOptional
     Nullable!ChosenInlineResult chosen_inline_result;
+    @serdeOptional
     Nullable!CallbackQuery      callback_query;
+    @serdeOptional
     Nullable!ShippingQuery      shipping_query;
+    @serdeOptional
     Nullable!PreCheckoutQuery   pre_checkout_query;
+    @serdeOptional
     Nullable!Poll               poll;
+    @serdeOptional
     Nullable!PollAnswer         poll_answer;
 
     @property @safe @nogc nothrow pure
@@ -245,6 +304,17 @@ unittest
         "update_id": 143,
         "message": {
             "message_id": 243,
+            "from": {
+                "id": 11,
+                "is_bot": false,
+                "first_name": "FirstName"
+            },
+            "date": 1569098748,
+            "chat": {
+                "id": 11,
+                "type": "private",
+                "first_name": "FirstName"
+            },
             "text": "message text"
         }
     }`;
@@ -264,26 +334,53 @@ enum ParseMode : string
     Markdown = "Markdown",
     MarkdownV2 = "MarkdownV2",
     HTML     = "HTML",
+    @serdeKeys("")
     None     = "",
 }
 
 enum MessageEntityType : string
 {
+    @serdeKeys("mention")
     Mention = "mention",
+    @serdeKeys("hashtag")
     Hashtag = "hashtag",
+    @serdeKeys("cashtag")
     Cashtag = "cashtag",
+    @serdeKeys("bot_command")
     BotCommand = "bot_command",
+    @serdeKeys("url")
     Url = "url",
+    @serdeKeys("email")
     Email = "email",
+    @serdeKeys("phone_number")
     PhoneNumber = "phone_number",
+    @serdeKeys("bold")
     Bold = "bold",
+    @serdeKeys("italic")
     Italic = "italic",
+    @serdeKeys("underline")
     Underline = "underline",
+    @serdeKeys("strikethrough")
     Strikethrough = "strikethrough",
+    @serdeKeys("code")
     Code = "code",
+    @serdeKeys("pre")
     Pre = "pre",
+    @serdeKeys("text_link")
     TextLink = "text_link",
+    @serdeKeys("text_mention")
     TextMension = "text_mention"
+}
+
+unittest
+{
+    MessageEntityType t = deserialize!MessageEntityType(`"text_mention"`);
+
+    t
+        .assertEquals(MessageEntityType.TextMension);
+
+    MessageEntityType.BotCommand.serializeToJson()
+        .assertEquals(`"bot_command"`);
 }
 
 struct MessageEntity
@@ -291,7 +388,9 @@ struct MessageEntity
     MessageEntityType        type;
     uint          offset;
     uint          length;
+    @serdeOptional
     Nullable!string  url;
+    @serdeOptional
     Nullable!User    user;
 }
 
@@ -301,6 +400,7 @@ struct PhotoSize
     int           width;
     int           height;
 
+    @serdeOptional
     Nullable!uint file_size;
 }
 
@@ -308,10 +408,15 @@ struct Audio
 {
     string file_id;
     uint   duration;
+    @serdeOptional
     Nullable!string performer;
+    @serdeOptional
     Nullable!string title;
+    @serdeOptional
     Nullable!string mime_type;
+    @serdeOptional
     Nullable!uint   file_size;
+    @serdeOptional
     Nullable!PhotoSize thumb;
 }
 
@@ -360,8 +465,11 @@ struct Contact
 {
     string phone_number;
     string first_name;
+    @serdeOptional
     Nullable!string last_name;
+    @serdeOptional
     Nullable!uint user_id;
+    @serdeOptional
     Nullable!string vcard;
 }
 
@@ -392,7 +500,9 @@ struct Venue
     Location location;
     string   title;
     string   address;
+    @serdeOptional
     Nullable!string   foursquare_id;
+    @serdeOptional
     Nullable!string   foursquare_type;
 }
 
@@ -438,8 +548,11 @@ struct ReplyKeyboardMarkup
 {
     KeyboardButton[][] keyboard;
 
+    @serdeOptional
     Nullable!bool      resize_keyboard;
+    @serdeOptional
     Nullable!bool      one_time_keyboard;
+    @serdeOptional
     Nullable!bool      selective;
 
     this (string[][] keyboard)
@@ -457,7 +570,9 @@ struct KeyboardButton
 {
     string text;
 
+    @serdeOptional
     Nullable!bool   request_contact;
+    @serdeOptional
     Nullable!bool   request_location;
 
     this(string text)
@@ -500,6 +615,7 @@ KeyboardButton[] toKeyboardButtonRow(string[] row)
 struct ReplyKeyboardRemove
 {
     bool remove_keyboard = true;
+    @serdeOptional
     Nullable!bool           selective;
 }
 
@@ -511,11 +627,17 @@ struct InlineKeyboardMarkup
 struct InlineKeyboardButton
 {
     string       text;
+    @serdeOptional
     Nullable!string       url;
+    @serdeOptional
     Nullable!string       callback_data;
+    @serdeOptional
     Nullable!string       switch_inline_query;
+    @serdeOptional
     Nullable!string       switch_inline_query_current_chat;
+    @serdeOptional
     Nullable!CallbackGame callback_game;
+    @serdeOptional
     Nullable!bool         pay;
 }
 
@@ -524,6 +646,7 @@ struct CallbackQuery
 {
     string           id;
     User             from;
+    @serdeOptional
     Nullable!Message message;
     string           inline_message_id;
     string           chat_instance;
@@ -534,6 +657,7 @@ struct CallbackQuery
 struct ForceReply
 {
     bool     force_reply = true;
+    @serdeOptional
     Nullable!bool     selective;
 }
 
@@ -564,7 +688,9 @@ struct InputMediaPhoto
 {
     string type;
     string media;
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 }
 
@@ -572,11 +698,17 @@ struct InputMediaVideo
 {
     string type;
     string media;
+    @serdeOptional
     Nullable!string    caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!uint   width;
+    @serdeOptional
     Nullable!uint   height;
+    @serdeOptional
     Nullable!uint   duration;
+    @serdeOptional
     Nullable!bool   supports_streaming;
 }
 
@@ -584,11 +716,17 @@ struct InputMediaAnimation
 {
     string type = "animation";
     string media;
+    @serdeOptional
     Nullable!string thumb; // TODO InputFile
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!uint width;
+    @serdeOptional
     Nullable!uint height;
+    @serdeOptional
     Nullable!uint duration;
 }
 
@@ -596,11 +734,17 @@ struct InputMediaAudio
 {
     string type = "audio";
     string media;
+    @serdeOptional
     Nullable!string thumb; // TODO InputFile
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!uint duration;
+    @serdeOptional
     Nullable!string performer;
+    @serdeOptional
     Nullable!string title;
 }
 
@@ -608,8 +752,11 @@ struct InputMediaDocument
 {
     string type = "document";
     string media;
+    @serdeOptional
     Nullable!string thumb; // TODO InputFile
+    @serdeOptional
     Nullable!string caption;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
 }
 
@@ -627,7 +774,9 @@ alias InputMessageContent = JsonableAlgebraicProxy!InputMessageContentStructs;
 struct InputTextMessageContent
 {
     string message_text;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!bool   disable_web_page_preview;
 }
 
@@ -635,6 +784,7 @@ struct InputLocationMessageContent
 {
     float latitude;
     float longitude;
+    @serdeOptional
     Nullable!uint  live_period;
 }
 
@@ -645,7 +795,9 @@ struct InputVenueMessageContent
     float  longitude;
     string title;
     string address;
+    @serdeOptional
     Nullable!string foursquare_id;
+    @serdeOptional
     Nullable!string foursquare_type;
 }
 
@@ -670,7 +822,9 @@ struct InputContactMessageContent
 {
     string phone_number;
     string first_name;
+    @serdeOptional
     Nullable!string last_name;
+    @serdeOptional
     Nullable!string vcard;
 }
 
@@ -678,7 +832,9 @@ struct ChosenInlineResult
 {
     string   result_id;
     User     from;
+    @serdeOptional
     Nullable!Location location;
+    @serdeOptional
     Nullable!string   inline_message_id;
     string   query;
 }
@@ -687,20 +843,44 @@ struct ChosenInlineResult
 /*                        Telegram methods                        */
 /******************************************************************/
 
-@serializedAs!(SerializableEnumProxy!UpdateType)
 enum UpdateType: string
 {
+    @serdeKeys("message")
     Message = "message",
+    @serdeKeys("edited_message")
     EditedMessage = "edited_message",
+    @serdeKeys("channel_post")
     ChannelPost = "channel_post",
+    @serdeKeys("edited_channel_post")
     EditedChannelPost = "edited_channel_post",
+    @serdeKeys("inline_query")
     InlineQuery = "inline_query",
+    @serdeKeys("chosen_inline_result")
     ChosenInlineResult = "chosen_inline_result",
+    @serdeKeys("callback_query")
     CallbackQuery = "callback_query",
+    @serdeKeys("shipping_query")
     ShippingQuery = "shipping_query",
+    @serdeKeys("pre_checkout_query")
     PreCheckoutQuery = "pre_checkout_query",
+    @serdeKeys("poll")
     Poll = "poll",
+    @serdeKeys("poll_answer")
     PollAnswer = "poll_answer"
+}
+
+unittest
+{
+    UpdateType t = deserialize!UpdateType(`"edited_channel_post"`);
+
+    t
+        .assertEquals(UpdateType.EditedChannelPost);
+
+    GetUpdatesMethod m;
+    m.allowed_updates = [UpdateType.Message, UpdateType.CallbackQuery];
+
+    m.serializeToJsonString()
+        .assertEquals(`{"allowed_updates":["message","callback_query"]}`);
 }
 
 struct GetUpdatesMethod
@@ -710,9 +890,13 @@ struct GetUpdatesMethod
 
     mixin TelegramMethod!"/getUpdates";
 
+    @serdeOptional
     Nullable!int   offset;
+    @serdeOptional
     Nullable!ubyte limit;
+    @serdeOptional
     Nullable!uint  timeout;
+    @serdeOptional
     Nullable!(UpdateType[]) allowed_updates;
 
     void updateOffset(uint updateId)
@@ -749,9 +933,13 @@ struct SendMessageMethod
 
     ChatId    chat_id;
     string    text;
+    @serdeOptional
     Nullable!ParseMode parse_mode;
+    @serdeOptional
     Nullable!bool      disable_web_page_preview;
+    @serdeOptional
     Nullable!bool      disable_notification;
+    @serdeOptional
     Nullable!uint      reply_to_message_id;
 
     ReplyMarkup reply_markup;
@@ -774,6 +962,7 @@ struct ForwardMessageMethod
 
     ChatId chat_id;
     string from_chat_id;
+    @serdeOptional
     Nullable!bool   disable_notification;
     uint   message_id;
 }
@@ -784,10 +973,15 @@ struct SendPhotoMethod
 
     ChatId      chat_id;
     string      photo;
+    @serdeOptional
     Nullable!string      caption;
+    @serdeOptional
     Nullable!ParseMode   parse_mode;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -824,13 +1018,21 @@ struct SendAudioMethod
 
     ChatId      chat_id;
     string      audio;
+    @serdeOptional
     Nullable!string      caption;
+    @serdeOptional
     Nullable!ParseMode   parse_mode;
+    @serdeOptional
     Nullable!uint        duration;
+    @serdeOptional
     Nullable!string      performer;
+    @serdeOptional
     Nullable!string      title;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 
 }
@@ -868,10 +1070,15 @@ struct SendDocumentMethod
 
     ChatId      chat_id;
     string      document;
+    @serdeOptional
     Nullable!string      caption;
+    @serdeOptional
     Nullable!ParseMode   parse_mode;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -905,14 +1112,23 @@ struct SendVideoMethod
 
     string      chat_id;
     string      video;
+    @serdeOptional
     Nullable!uint        duration;
+    @serdeOptional
     Nullable!uint        width;
+    @serdeOptional
     Nullable!uint        height;
+    @serdeOptional
     Nullable!string      caption;
+    @serdeOptional
     Nullable!ParseMode   parse_mode;
+    @serdeOptional
     Nullable!bool        supports_streaming;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -953,11 +1169,17 @@ struct SendVoiceMethod
 
     ChatId      chat_id;
     string      voice;
+    @serdeOptional
     Nullable!string      caption;
+    @serdeOptional
     Nullable!ParseMode   parse_mode;
+    @serdeOptional
     Nullable!uint        duration;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -994,10 +1216,15 @@ struct SendVideoNoteMethod
 
     ChatId      chat_id;
     string      video_note;
+    @serdeOptional
     Nullable!uint        duration;
+    @serdeOptional
     Nullable!uint        length;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -1018,7 +1245,9 @@ struct SendMediaGroupMethod
 
     ChatId       chat_id;
     InputMedia[] media;
+    @serdeOptional
     Nullable!bool         disable_notification;
+    @serdeOptional
     Nullable!uint         reply_to_message_id;
 }
 
@@ -1049,10 +1278,15 @@ struct SendLocationMethod
     ChatId      chat_id;
     float       latitude;
     float       longitude;
+    @serdeOptional
     Nullable!float       horizontal_accuracy;
+    @serdeOptional
     Nullable!uint        live_period;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -1099,10 +1333,15 @@ struct SendVenueMethod
     float       longitude;
     string      title;
     string      address;
+    @serdeOptional
     Nullable!string      foursquare_id;
+    @serdeOptional
     Nullable!string     foursquare_type;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -1127,10 +1366,15 @@ struct SendContactMethod
     ChatId      chat_id;
     string      phone_number;
     string      first_name;
+    @serdeOptional
     Nullable!string      last_name;
+    @serdeOptional
     Nullable!string      vcard;
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -1148,15 +1392,25 @@ unittest
 
 enum ChatAction : string
 {
+    @serdeKeys("typing")
     Typing = "typing",
+    @serdeKeys("upload_photo")
     UploadPhoto = "upload_photo",
+    @serdeKeys("record_video")
     RecordVideo = "record_video",
+    @serdeKeys("upload_video")
     UploadVideo = "upload_video",
+    @serdeKeys("record_audio")
     RecordAudio = "record_audio",
+    @serdeKeys("upload_audio")
     UploadAudio = "upload_audio",
+    @serdeKeys("upload_document")
     UploadDocument = "upload_document",
+    @serdeKeys("find_location")
     FindLocation = "find_location",
+    @serdeKeys("record_video_note")
     RecordVideoNote = "record_video_note",
+    @serdeKeys("upload_video_note")
     UploadVideoNote = "upload_video_note"
 }
 
@@ -1391,11 +1645,13 @@ Message sendLocation(T1)(BotApi api, T1 chatId, float latitude, float longitude)
     return sendLocation(api, m);
 }
 
+@serdeOptional
 Nullable!Message editMessageLiveLocation(BotApi api, ref EditMessageLiveLocationMethod m)
 {
     return api.callMethod!(Nullable!Message, EditMessageLiveLocationMethod)(m);
 }
 
+@serdeOptional
 Nullable!Message editMessageLiveLocation(BotApi api, string inlineMessageId, float latitude, float longitude)
 {
     EditMessageLiveLocationMethod m = {
@@ -1407,6 +1663,7 @@ Nullable!Message editMessageLiveLocation(BotApi api, string inlineMessageId, flo
     return editMessageLiveLocation(api, m);
 }
 
+@serdeOptional
 Nullable!Message editMessageLiveLocation(T1)(BotApi api, T1 chatId, uint messageId, float latitude, float longitude)
     if (isTelegramId!T1)
 {
@@ -1420,11 +1677,13 @@ Nullable!Message editMessageLiveLocation(T1)(BotApi api, T1 chatId, uint message
     return editMessageLiveLocation(api, m);
 }
 
+@serdeOptional
 Nullable!Message stopMessageLiveLocation(BotApi api, ref StopMessageLiveLocationMethod m)
 {
     return api.callMethod!(Nullable!Message, StopMessageLiveLocationMethod)(m);
 }
 
+@serdeOptional
 Nullable!Message stopMessageLiveLocation(BotApi api, string inlineMessageId)
 {
     StopMessageLiveLocationMethod m = {
@@ -1434,6 +1693,7 @@ Nullable!Message stopMessageLiveLocation(BotApi api, string inlineMessageId)
     return stopMessageLiveLocation(api, m);
 }
 
+@serdeOptional
 Nullable!Message stopMessageLiveLocation(T1)(BotApi api, T1 chatId, uint messageId)
     if (isTelegramId!T1)
 {

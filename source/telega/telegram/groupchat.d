@@ -3,6 +3,7 @@ module telega.telegram.groupchat;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, ChatId, isTelegramId;
 import telega.telegram.basic : User, InputFile;
+import asdf.serialization : serdeOptional;
 
 /******************************************************************/
 /*                    Telegram types and enums                    */
@@ -12,20 +13,35 @@ struct ChatMember
 {
     User   user;
     string status;
+    @serdeOptional
     Nullable!uint   until_date;
+    @serdeOptional
     Nullable!bool   can_be_edited;
+    @serdeOptional
     Nullable!bool   can_change_info;
+    @serdeOptional
     Nullable!bool   can_post_messages;
+    @serdeOptional
     Nullable!bool   can_edit_messages;
+    @serdeOptional
     Nullable!bool   can_delete_messages;
+    @serdeOptional
     Nullable!bool   can_invite_users;
+    @serdeOptional
     Nullable!bool   can_restrict_members;
+    @serdeOptional
     Nullable!bool   can_pin_messages;
+    @serdeOptional
     Nullable!bool   is_member;
+    @serdeOptional
     Nullable!bool   can_promote_members;
+    @serdeOptional
     Nullable!bool   can_send_messages;
+    @serdeOptional
     Nullable!bool   can_send_media_messages;
+    @serdeOptional
     Nullable!bool   can_send_other_messages;
+    @serdeOptional
     Nullable!bool   can_add_web_page_previews;
 }
 

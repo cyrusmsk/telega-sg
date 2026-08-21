@@ -1,0 +1,17 @@
+{
+	"name": "socks-proxy",
+	"description": "A simple telegram echo bot connecting to a telegram API through SOCKS5 proxy",
+
+	"dependencies": {
+		"telega": {"version": "~master", "path": "../../"},
+		"vibe-d:tls": ">=0.0.0"
+	},
+
+	"subConfigurations": {
+		"telega": "requests-driver",
+		"requests": "vibed",
+		"vibe-d:tls": "openssl-1.1"
+	},
+
+	"versions": ["VibeDisableCommandLineParsing"]
+}
