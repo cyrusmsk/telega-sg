@@ -3,33 +3,14 @@ module telega.telegram.poll;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, ChatId, isTelegramId;
 import telega.telegram.basic : Message, MessageEntity, User, ReplyMarkup;
-import asdf : serializedAs;
+import asdf.serialization : serdeOptional, serdeKeys;
 
-@serializedAs!PollTypeProxy
 enum PollType : string
 {
+    @serdeKeys("quiz")
     Quiz = "quiz",
+    @serdeKeys("regular")
     Regular = "regular"
-}
-
-struct PollTypeProxy
-{
-    PollType t;
-
-    this(PollType type)
-    {
-        t = type;
-    }
-
-    PollType opCast(T : PollType)()
-    {
-        return t;
-    }
-
-    void serialize(S)(ref S serializer)
-    {
-        serializer.putValue(cast(string)t);
-    }
 }
 
 struct PollOption
@@ -53,13 +34,67 @@ struct Poll
     uint total_voter_count;
     bool is_closed;
     bool is_anonymous;
-    string type;
+    PollType type;
     bool allows_multiple_answers;
+    @serdeOptional
     Nullable!uint correct_option_id;
+    @serdeOptional
     Nullable!string explanation;
+    @serdeOptional
     Nullable!(MessageEntity[]) explanation_entities;
+    @serdeOptional
     Nullable!uint open_period;
+    @serdeOptional
     Nullable!uint close_date;
+}
+
+version(unittest)
+{
+    import asdf : deserialize;
+    import telega.serialization : serializeToJsonString;
+    import telega.test : assertEquals;
+}
+
+unittest
+{
+    string json = `{
+        "id": "poll1",
+        "question": "q",
+        "options": [
+            {"text": "opt1", "voter_count": 1},
+            {"text": "opt2", "voter_count": 2}
+        ],
+        "total_voter_count": 3,
+        "is_closed": false,
+        "is_anonymous": false,
+        "type": "quiz",
+        "allows_multiple_answers": false,
+        "correct_option_id": 1
+    }`;
+
+    Poll p = deserialize!Poll(json);
+
+    p.id
+        .assertEquals("poll1");
+    p.type
+        .assertEquals(PollType.Quiz);
+    p.correct_option_id.get
+        .assertEquals(1);
+    p.explanation.isNull
+        .assertEquals(true);
+    p.open_period.isNull
+        .assertEquals(true);
+}
+
+unittest
+{
+    Poll p;
+    p.id = "poll1";
+    p.question = "q";
+    p.type = PollType.Regular;
+
+    p.serializeToJsonString()
+        .assertEquals(`{"id":"poll1","question":"q","options":[],"total_voter_count":0,"is_closed":false,"is_anonymous":false,"type":"regular","allows_multiple_answers":false}`);
 }
 
 struct SendPollMethod
@@ -69,17 +104,29 @@ struct SendPollMethod
     ChatId chat_id;
     string question;
     string[] options;
+    @serdeOptional
     Nullable!bool is_anonymous;
+    @serdeOptional
     Nullable!PollType type;
+    @serdeOptional
     Nullable!bool allows_multiple_answers;
+    @serdeOptional
     Nullable!uint correct_option_id;
+    @serdeOptional
     Nullable!string explanation;
+    @serdeOptional
     Nullable!string explanation_parse_mode;
+    @serdeOptional
     Nullable!ushort open_period;
+    @serdeOptional
     Nullable!uint close_date;
+    @serdeOptional
     Nullable!bool is_closed;
+    @serdeOptional
     Nullable!bool disable_notification;
+    @serdeOptional
     Nullable!uint reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 
@@ -89,6 +136,7 @@ struct StopPollMethod
 
     ChatId chat_id;
     uint message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 

@@ -3,6 +3,7 @@ module telega.telegram.stickers;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, isTelegramId, ChatId;
 import telega.telegram.basic : PhotoSize, ReplyMarkup, InputFile, Message, File;
+import asdf.serialization : serdeOptional;
 
 version (unittest)
 {
@@ -45,8 +46,11 @@ struct SendStickerMethod
 
     ChatId      chat_id;
     string      sticker; // TODO InputFile|string
+    @serdeOptional
     Nullable!bool        disable_notification;
+    @serdeOptional
     Nullable!uint        reply_to_message_id;
+    @serdeOptional
     Nullable!ReplyMarkup reply_markup;
 }
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0] - 2026-08-21
+### Changed
+- Updated asdf to 0.8.0 (finishes #72, #73)
+- dub.sdl rewritten as dub.json
+- Migrated to the asdf serde API: `@serdeProxy`, `@serdeIgnore`, `SerdeException deserializeFromAsdf`
+- All optional fields are annotated with `@serdeOptional` (asdf 0.6+ treats unannotated members as required)
+- String enums use `@serdeKeys` for wire format values instead of serialization proxies
+- `Poll.type` is now `PollType` instead of `string`
+
 ## [0.2.1] - 2024-01-07
 ### Changed
 - Added support for ldc 1.36.0
