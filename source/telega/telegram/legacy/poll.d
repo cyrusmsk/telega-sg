@@ -1,8 +1,8 @@
-module telega.telegram.poll;
+module telega.telegram.legacy.poll;
 
 import std.typecons : Nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, ChatId, isTelegramId;
-import telega.telegram.basic : Message, MessageEntity, User, ReplyMarkup;
+import telega.telegram.legacy.basic : Message, MessageEntity, User, ReplyMarkup;
 import asdf.serialization : serdeOptional, serdeKeys;
 
 enum PollType : string
@@ -174,7 +174,7 @@ Poll stopPoll(T1)(BotApi api, T1 chatId, uint messageId)
 
 unittest
 {
-    import telega.telegram.basic : BotApiMock;
+    import telega.telegram.legacy.basic : BotApiMock;
 
     auto api = new BotApiMock(null);
 

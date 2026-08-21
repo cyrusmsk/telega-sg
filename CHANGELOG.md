@@ -1,6 +1,13 @@
 # Changelog
 
 ## [0.3.0] - 2026-08-21
+### Added
+- API generator (`generator/`): parses https://core.telegram.org/bots/api with parserino
+  and generates D types, methods, wrapper functions and DDOC for Bot API 10.x into
+  `source/telega/telegram/generated/` (`make generate-api`)
+- Generated modules are placed alongside the hand-written ones moved to
+  `source/telega/telegram/legacy/`; both generations can be used side by side
+
 ### Changed
 - Updated asdf to 0.8.0 (finishes #72, #73)
 - Updated requests to 2.2.x

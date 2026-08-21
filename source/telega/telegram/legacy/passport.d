@@ -1,4 +1,4 @@
-module telega.telegram.passport;
+module telega.telegram.legacy.passport;
 
 import std.typecons;
 import telega.botapi;

@@ -1,9 +1,9 @@
-module telega.telegram.inline;
+module telega.telegram.legacy.inline;
 
 import std.typecons : Nullable;
 import std.meta : AliasSeq;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod;
-import telega.telegram.basic : ParseMode, InlineKeyboardMarkup, InputMessageContent, User, Location;
+import telega.telegram.legacy.basic : ParseMode, InlineKeyboardMarkup, InputMessageContent, User, Location;
 import telega.serialization : JsonableAlgebraicProxy;
 import asdf.serialization : serdeOptional;
 
@@ -429,7 +429,7 @@ bool answerInlineQuery(BotApi api, string inlineQueryId, InlineQueryResult[] res
 
 unittest
 {
-    import telega.telegram.basic : BotApiMock;
+    import telega.telegram.legacy.basic : BotApiMock;
 
     auto api = new BotApiMock(null);
 

@@ -23,6 +23,15 @@ shell-ldc:
 dc-build:
 	$(DC) build
 
+generate-api:
+	cd generator && dub build && ./bin/telega-api-generator --file fixtures/botapi.html --target-dir ../source/telega/telegram/generated
+
+generate-api-live:
+	cd generator && dub build && ./bin/telega-api-generator --target-dir ../source/telega/telegram/generated
+
+check-generated-api: generate-api
+	git diff --exit-code -- source/telega/telegram/generated || (echo "Generated code is out of date. Run 'make generate-api' and commit." && exit 1)
+
 run-example-echobot:
 	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/echobot --rm example dub
 

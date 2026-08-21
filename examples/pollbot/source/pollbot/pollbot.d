@@ -2,8 +2,8 @@ module pollbot.pollbot;
 
 import std.typecons : Nullable;
 import vibe.core.log : setLogLevel, logInfo, LogLevel;
-import telega.telegram.basic : Message, Update, sendMessage;
-import telega.telegram.poll : Poll, SendPollMethod, StopPollMethod, sendPoll, stopPoll, PollType;
+import telega.telegram.legacy.basic : Message, Update, sendMessage;
+import telega.telegram.legacy.poll : Poll, SendPollMethod, StopPollMethod, sendPoll, stopPoll, PollType;
 import telega.botapi : BotApi;
 
 class PollBot

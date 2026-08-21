@@ -1,8 +1,8 @@
-module telega.telegram.stickers;
+module telega.telegram.legacy.stickers;
 
 import std.typecons : Nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, isTelegramId, ChatId;
-import telega.telegram.basic : PhotoSize, ReplyMarkup, InputFile, Message, File;
+import telega.telegram.legacy.basic : PhotoSize, ReplyMarkup, InputFile, Message, File;
 import asdf.serialization : serdeOptional;
 
 version (unittest)
@@ -235,7 +235,7 @@ bool deleteStickerFromSet(BotApi api, string sticker)
 
 unittest
 {
-    import telega.telegram.basic : BotApiMock;
+    import telega.telegram.legacy.basic : BotApiMock;
 
     auto api = new BotApiMock(null);
 

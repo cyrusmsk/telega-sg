@@ -1,7 +1,7 @@
-module telega.telegram.payments;
+module telega.telegram.legacy.payments;
 
 import std.typecons : Nullable;
-import telega.telegram.basic : User;
+import telega.telegram.legacy.basic : User;
 import asdf.serialization : serdeOptional;
 
 

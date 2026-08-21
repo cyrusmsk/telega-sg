@@ -1,15 +1,15 @@
-module telega.telegram.basic;
+module telega.telegram.legacy.basic;
 
 import std.typecons : Nullable, nullable;
 import asdf : Asdf, deserialize, serializeToJson;
 import asdf.serialization : serdeOptional, serdeKeys;
 import telega.serialization : JsonableAlgebraicProxy, serializeToJsonString;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, ChatId, isTelegramId;
-import telega.telegram.stickers : Sticker;
-import telega.telegram.games : Game, Animation, CallbackGame;
-import telega.telegram.payments : Invoice, SuccessfulPayment, ShippingQuery, PreCheckoutQuery;
-import telega.telegram.inline : InlineQuery;
-import telega.telegram.poll : Poll, PollAnswer;
+import telega.telegram.legacy.stickers : Sticker;
+import telega.telegram.legacy.games : Game, Animation, CallbackGame;
+import telega.telegram.legacy.payments : Invoice, SuccessfulPayment, ShippingQuery, PreCheckoutQuery;
+import telega.telegram.legacy.inline : InlineQuery;
+import telega.telegram.legacy.poll : Poll, PollAnswer;
 
 
 version (unittest)

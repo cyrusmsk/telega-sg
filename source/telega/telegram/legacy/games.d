@@ -1,6 +1,6 @@
-module telega.telegram.games;
+module telega.telegram.legacy.games;
 
-import telega.telegram.basic : MessageEntity, PhotoSize, User;
+import telega.telegram.legacy.basic : MessageEntity, PhotoSize, User;
 
 /*** Games types ***/
 

@@ -1,8 +1,8 @@
-module telega.telegram.groupchat;
+module telega.telegram.legacy.groupchat;
 
 import std.typecons : Nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, ChatId, isTelegramId;
-import telega.telegram.basic : User, InputFile;
+import telega.telegram.legacy.basic : User, InputFile;
 import asdf.serialization : serdeOptional;
 
 /******************************************************************/
@@ -461,7 +461,7 @@ bool deleteChatStickerSet(T1)(BotApi api, T1 chatId)
 
 unittest
 {
-    import telega.telegram.basic : BotApiMock;
+    import telega.telegram.legacy.basic : BotApiMock;
 
     auto api = new BotApiMock(null);
 

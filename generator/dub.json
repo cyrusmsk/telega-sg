@@ -1,0 +1,17 @@
+{
+ "name": "telega-api-generator",
+ "description": "Telegram Bot API dlang code generator",
+ "authors": [
+  "Pavel Chebotarev"
+ ],
+ "license": "MIT",
+ "targetType": "executable",
+ "targetPath": "bin",
+ "dependencies": {
+  "parserino": "~>0.2.9",
+  "requests": "~>2.2.0"
+ },
+ "stringImportPaths": [
+  "."
+ ]
+}

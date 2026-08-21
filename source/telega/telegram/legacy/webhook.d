@@ -1,8 +1,8 @@
-module telega.telegram.webhook;
+module telega.telegram.legacy.webhook;
 
 import std.typecons : Nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod;
-import telega.telegram.basic : InputFile;
+import telega.telegram.legacy.basic : InputFile;
 import asdf.serialization : serdeOptional;
 
 struct WebhookInfo
@@ -71,7 +71,7 @@ WebhookInfo getWebhookInfo(BotApi api)
 
 unittest
 {
-    import telega.telegram.basic : BotApiMock;
+    import telega.telegram.legacy.basic : BotApiMock;
 
     auto api = new BotApiMock(null);
 

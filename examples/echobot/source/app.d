@@ -24,7 +24,7 @@ int main(string[] args)
 void listenUpdates(string token)
 {
     import telega.botapi : BotApi;
-    import telega.telegram.basic : Update, getUpdates, sendMessage;
+    import telega.telegram.legacy.basic : Update, getUpdates, sendMessage;
     import std.algorithm.iteration : filter, each;
     import std.algorithm.comparison : max;
 

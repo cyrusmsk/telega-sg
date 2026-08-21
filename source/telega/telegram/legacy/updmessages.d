@@ -1,9 +1,9 @@
-module telega.telegram.updmessages;
+module telega.telegram.legacy.updmessages;
 
 import std.typecons : Nullable, nullable;
 import telega.botapi : BotApi, TelegramMethod, HTTPMethod, ChatId, isTelegramId;
 import asdf.serialization : serdeOptional;
-import telega.telegram.basic : ParseMode, ReplyMarkup, ForceReply, ReplyKeyboardMarkup, ReplyKeyboardRemove,
+import telega.telegram.legacy.basic : ParseMode, ReplyMarkup, ForceReply, ReplyKeyboardMarkup, ReplyKeyboardRemove,
         InlineKeyboardMarkup, isReplyMarkup, InputMedia, InputMediaPhoto;
 
 version (unittest)
@@ -215,7 +215,7 @@ bool deleteMessage(T1)(BotApi api, T1 chatId, uint messageId)
 
 unittest
 {
-    import telega.telegram.basic : BotApiMock;
+    import telega.telegram.legacy.basic : BotApiMock;
 
     auto api = new BotApiMock(null);
 
