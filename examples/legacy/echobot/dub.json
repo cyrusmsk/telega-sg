@@ -1,8 +1,9 @@
 {
 	"name": "echobot",
 	"description": "A simple telegram echo bot",
-
 	"dependencies": {
-		"telega": {"version": "~master", "path": "../../../"}
+		"telega": {
+			"path": "../../../"
+		}
 	}
 }

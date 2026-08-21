@@ -1,11 +1,11 @@
 {
 	"name": "keyboard",
 	"description": "Keyboard usage example (generated API)",
-
 	"dependencies": {
-		"telega": {"version": "~master", "path": "../../"}
+		"telega": {
+			"path": "../../"
+		}
 	},
-
 	"subConfigurations": {
 		"telega": "requests-driver"
 	}

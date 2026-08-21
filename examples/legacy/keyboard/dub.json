@@ -1,14 +1,15 @@
 {
 	"name": "keyboard",
 	"description": "Keyboard usage example",
-
 	"dependencies": {
-		"telega": {"version": "~master", "path": "../../../"}
+		"telega": {
+			"path": "../../../"
+		}
 	},
-
 	"subConfigurations": {
 		"telega": "requests-driver"
 	},
-
-	"versions": ["VibeDisableCommandLineParsing"]
+	"versions": [
+		"VibeDisableCommandLineParsing"
+	]
 }

@@ -7,6 +7,8 @@
   `source/telega/telegram/generated/` (`make generate-api`)
 - Generated modules are placed alongside the hand-written ones moved to
   `source/telega/telegram/legacy/`; both generations can be used side by side
+- Examples using the generated API: `examples/echobot`, `examples/keyboard`;
+  previous examples moved to `examples/legacy/`
 
 ### Changed
 - Updated asdf to 0.8.0 (finishes #72, #73)
