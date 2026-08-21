@@ -17,7 +17,7 @@
 			"name": "default",
 			"targetType": "library",
 			"dependencies": {
-				"vibe-d:http": ">=0.8.6 <0.10.0-0"
+				"vibe-http": "~>1.5"
 			},
 			"versions": ["VibeDisableCommandLineParsing", "TelegaVibedDriver", "VibeUseOpenSSL11"]
 		},
@@ -25,7 +25,7 @@
 			"name": "requests-driver",
 			"targetType": "library",
 			"dependencies": {
-				"requests": "~>2.0.0",
+				"requests": "~>2.2.0",
 				"socks-client": "~>0.2.0"
 			},
 			"subConfigurations": {
