@@ -6,8 +6,7 @@
 
 	"dependencies": {
 		"vibe-core": ">=1.9.0 <3.0.0-0",
-		"asdf": "~>0.8.0",
-		"dests": "~>0.3.1"
+		"asdf": "~>0.8.0"
 	},
 
 	"buildRequirements": ["disallowInlining"],

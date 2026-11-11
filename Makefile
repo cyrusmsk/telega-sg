@@ -24,7 +24,7 @@ dc-build:
 	$(DC) build
 
 generate-api:
-	cd generator && dub build && ./bin/telega-api-generator --file fixtures/botapi.html --target-dir ../source/telega/telegram/generated
+	cd generator && dub build && ./bin/telega-api-generator --file fixtures/botapi_10_4.html --target-dir ../source/telega/telegram/generated
 
 generate-api-live:
 	cd generator && dub build && ./bin/telega-api-generator --target-dir ../source/telega/telegram/generated
@@ -38,6 +38,12 @@ run-example-echobot:
 
 run-example-keyboard:
 	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/keyboard --rm example dub
+
+run-example-photosender:
+	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/photosender --rm example dub -- $(ARGS)
+
+run-example-widgetbot:
+	$(DC) -f docker-compose.examples.yml run --workdir=/dlang/app/examples/widgetbot --rm example dub
 
 # Legacy API examples
 run-example-legacy-echobot:

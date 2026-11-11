@@ -17,6 +17,7 @@ Now you can run examples using make command
 ```
 $ make run-example-echobot
 $ make run-example-keyboard
+$ make run-example-widgetbot
 $ make run-example-pollbot
 ```
 

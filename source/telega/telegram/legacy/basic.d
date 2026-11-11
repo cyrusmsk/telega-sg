@@ -760,10 +760,11 @@ struct InputMediaDocument
     Nullable!ParseMode parse_mode;
 }
 
-struct InputFile
-{
-    // no fields
-}
+/// File upload payload; the real implementation lives in telega.botapi
+/// and is transported as multipart/form-data by BotApi.
+static import telega.botapi;
+
+alias InputFile = telega.botapi.InputFile;
 
 alias InputMessageContentStructs = AliasSeq!(
     InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent

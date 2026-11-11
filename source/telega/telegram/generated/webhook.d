@@ -1,12 +1,12 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.webhook;
 
 import asdf.serialization : serdeOptional;
 import std.typecons : Nullable;
-import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod, InputFile, FileToSend;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 import telega.telegram.generated.basic;
 import telega.telegram.generated.inline;
 import telega.telegram.generated.payments;
@@ -59,6 +59,12 @@ struct Update
     /// New incoming callback query
     @serdeOptional
     Nullable!(CallbackQuery) callback_query;
+    /// New incoming query from a widget in a message sent by the bot or via the bot
+    @serdeOptional
+    Nullable!(WidgetQuery) widget_query;
+    /// New incoming query from a forwarded message with a shared widget
+    @serdeOptional
+    Nullable!(SharedWidgetQuery) shared_widget_query;
     /// New incoming shipping query. Only for invoices with flexible price.
     @serdeOptional
     Nullable!(ShippingQuery) shipping_query;
@@ -95,6 +101,9 @@ struct Update
     /// User payment subscription has changed
     @serdeOptional
     Nullable!(BotSubscriptionUpdated) subscription;
+    /// A user asked the bot to stop the generation of a message
+    @serdeOptional
+    Nullable!(MessageGenerationStopped) stopped_message_generation;
 }
 
 /++

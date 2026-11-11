@@ -1,4 +1,4 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.updmessages;
@@ -6,7 +6,7 @@ module telega.telegram.generated.updmessages;
 import asdf.serialization : serdeOptional;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 import telega.telegram.generated.basic;
 import telega.telegram.generated.rich;
 
@@ -17,7 +17,7 @@ struct EditMessageTextMethod
     /// Unique identifier of the business connection on behalf of which the message to be edited was sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username.
+    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username.
     @serdeOptional
     Nullable!(ChatId) chat_id;
     /// Required if inline_message_id is not specified. Identifier of the message to edit.
@@ -38,7 +38,7 @@ struct EditMessageTextMethod
     /// Link preview generation options for the message
     @serdeOptional
     Nullable!(LinkPreviewOptions) link_preview_options;
-    /// New rich content of the message; required if text isn't specified. Direct upload of new files isn't supported when an inline message is edited.
+    /// New rich content of the message; required if text isn't specified. Direct upload of new files and explicit upload of files by a URL isn't supported when an inline message is edited.
     @serdeOptional
     Nullable!(InputRichMessage) rich_message;
     /// A JSON-serialized object for an inline keyboard
@@ -59,7 +59,7 @@ struct EditMessageCaptionMethod
     /// Unique identifier of the business connection on behalf of which the message to be edited was sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username.
+    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username.
     @serdeOptional
     Nullable!(ChatId) chat_id;
     /// Required if inline_message_id is not specified. Identifier of the message to edit.
@@ -98,7 +98,7 @@ struct EditMessageMediaMethod
     /// Unique identifier of the business connection on behalf of which the message to be edited was sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username.
+    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username.
     @serdeOptional
     Nullable!(ChatId) chat_id;
     /// Required if inline_message_id is not specified. Identifier of the message to edit.
@@ -127,7 +127,7 @@ struct EditMessageLiveLocationMethod
     /// Unique identifier of the business connection on behalf of which the message to be edited was sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username.
+    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username.
     @serdeOptional
     Nullable!(ChatId) chat_id;
     /// Required if inline_message_id is not specified. Identifier of the message to edit.
@@ -170,7 +170,7 @@ struct StopMessageLiveLocationMethod
     /// Unique identifier of the business connection on behalf of which the message to be edited was sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username.
+    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username.
     @serdeOptional
     Nullable!(ChatId) chat_id;
     /// Required if inline_message_id is not specified. Identifier of the message with live location to stop.
@@ -213,6 +213,52 @@ Message editMessageChecklist(BotApi api, EditMessageChecklistMethod method)
     return api.callMethod!(Message)(method);
 }
 
+/++ Use this method to edit data of a widget in a message sent by the bot or via the bot (for inline bots). Public data of a shared widget can be changed at most once per second. On success, True is returned. +/
+struct EditMessageWidgetDataMethod
+{
+    mixin TelegramMethod!"/editMessageWidgetData";
+    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target supergroup in the format @username.
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
+    /// Required if inline_message_id is not specified. Identifier of the message with the widget.
+    @serdeOptional
+    Nullable!(long) message_id;
+    /// Required if chat_id and message_id are not specified. Identifier of the inline message.
+    @serdeOptional
+    Nullable!(string) inline_message_id;
+    /// New public data of the widget, 0-1024 bytes; pass an empty string to remove the public data. If omitted, then the public data isn't changed.
+    @serdeOptional
+    Nullable!(string) public_data;
+    /// New data of the widget, which is specific to the message, 0-1024 bytes; pass an empty string to remove the data. If omitted, then the data isn't changed.
+    @serdeOptional
+    Nullable!(string) chat_data;
+}
+
+/++ Use this method to edit data of a widget in a message sent by the bot or via the bot (for inline bots). Public data of a shared widget can be changed at most once per second. On success, True is returned. +/
+bool editMessageWidgetData(BotApi api, EditMessageWidgetDataMethod method)
+{
+    return api.callMethod!(bool)(method);
+}
+
+/++ Use this method to edit public data of a shared widget created by the bot. A shared widget can be edited at most once per second. On success, True is returned. +/
+struct EditSharedWidgetDataMethod
+{
+    mixin TelegramMethod!"/editSharedWidgetData";
+    /// Unique identifier of the shared widget
+    string widget_id;
+    /// New public data of the widget, 0-1024 bytes; pass an empty string to remove the public data
+    string public_data;
+    /// The maximum amount of time in seconds that the public data of the widget may be cached client-side; 5-3600. If omitted, then the current value is kept, which is 30 by default.
+    @serdeOptional
+    Nullable!(long) cache_time;
+}
+
+/++ Use this method to edit public data of a shared widget created by the bot. A shared widget can be edited at most once per second. On success, True is returned. +/
+bool editSharedWidgetData(BotApi api, EditSharedWidgetDataMethod method)
+{
+    return api.callMethod!(bool)(method);
+}
+
 /++ Use this method to edit only the reply markup of messages. On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent. +/
 struct EditMessageReplyMarkupMethod
 {
@@ -220,7 +266,7 @@ struct EditMessageReplyMarkupMethod
     /// Unique identifier of the business connection on behalf of which the message to be edited was sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username.
+    /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username.
     @serdeOptional
     Nullable!(ChatId) chat_id;
     /// Required if inline_message_id is not specified. Identifier of the message to edit.
@@ -240,7 +286,7 @@ bool editMessageReplyMarkup(BotApi api, EditMessageReplyMarkupMethod method)
     return api.callMethod!(bool)(method);
 }
 
-/++ Use this method to edit an ephemeral text message. Note that it is not guaranteed that the user will receive the message edit event, especially if they are offline. On success, True is returned. +/
+/++ Use this method to edit an ephemeral text or rich message. Note that it is not guaranteed that the user will receive the message edit event, especially if they are offline. On success, True is returned. +/
 struct EditEphemeralMessageTextMethod
 {
     mixin TelegramMethod!"/editEphemeralMessageText";
@@ -250,14 +296,18 @@ struct EditEphemeralMessageTextMethod
     long receiver_user_id;
     /// Identifier of the ephemeral message to edit
     long ephemeral_message_id;
-    /// New text of the message, 1-4096 characters after entity parsing
-    string text;
+    /// New text of the message, 1-4096 characters after entity parsing; required if rich_message isn't specified
+    @serdeOptional
+    Nullable!(string) text;
     /// Mode for parsing entities in the message text. See formatting options for more details.
     @serdeOptional
     Nullable!(string) parse_mode;
     /// A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
     @serdeOptional
     Nullable!(MessageEntity[]) entities;
+    /// New rich content of the message; required if text isn't specified
+    @serdeOptional
+    Nullable!(InputRichMessage) rich_message;
     /// Link preview generation options for the message
     @serdeOptional
     Nullable!(LinkPreviewOptions) link_preview_options;
@@ -266,7 +316,7 @@ struct EditEphemeralMessageTextMethod
     Nullable!(InlineKeyboardMarkup) reply_markup;
 }
 
-/++ Use this method to edit an ephemeral text message. Note that it is not guaranteed that the user will receive the message edit event, especially if they are offline. On success, True is returned. +/
+/++ Use this method to edit an ephemeral text or rich message. Note that it is not guaranteed that the user will receive the message edit event, especially if they are offline. On success, True is returned. +/
 bool editEphemeralMessageText(BotApi api, EditEphemeralMessageTextMethod method)
 {
     return api.callMethod!(bool)(method);
@@ -282,7 +332,7 @@ struct EditEphemeralMessageMediaMethod
     long receiver_user_id;
     /// Identifier of the ephemeral message to edit
     long ephemeral_message_id;
-    /// A JSON-serialized object for the new media content of the message. A new file can't be uploaded; use a previously uploaded file via its file_id or specify a URL.
+    /// A JSON-serialized object for the new media content of the message
     InputMedia media;
     /// A JSON-serialized object for an inline keyboard
     @serdeOptional
@@ -314,6 +364,9 @@ struct EditEphemeralMessageCaptionMethod
     /// A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
     @serdeOptional
     Nullable!(MessageEntity[]) caption_entities;
+    /// Pass True if the caption must be shown above the message media. Supported only for animation, photo and video messages.
+    @serdeOptional
+    Nullable!(bool) show_caption_above_media;
     /// A JSON-serialized object for an inline keyboard
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
@@ -388,7 +441,7 @@ bool declineSuggestedPost(BotApi api, DeclineSuggestedPostMethod method)
 struct DeleteMessageMethod
 {
     mixin TelegramMethod!"/deleteMessage";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Identifier of the message to delete
     long message_id;
@@ -404,7 +457,7 @@ bool deleteMessage(BotApi api, DeleteMessageMethod method)
 struct DeleteMessagesMethod
 {
     mixin TelegramMethod!"/deleteMessages";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// A JSON-serialized list of 1-100 identifiers of messages to delete. See deleteMessage for limitations on which messages can be deleted.
     long[] message_ids;

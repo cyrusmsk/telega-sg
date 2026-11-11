@@ -1,4 +1,4 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.payments;
@@ -6,14 +6,14 @@ module telega.telegram.generated.payments;
 import asdf.serialization : serdeOptional;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 import telega.telegram.generated.basic;
 
 /++ Use this method to send invoices. On success, the sent Message is returned. +/
 struct SendInvoiceMethod
 {
     mixin TelegramMethod!"/sendInvoice";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -441,6 +441,7 @@ struct PaidMediaPurchased
 alias RevenueWithdrawalState = JsonableAlgebraicProxy!(RevenueWithdrawalStateFailed, RevenueWithdrawalStatePending, RevenueWithdrawalStateSucceeded);
 
 /++ The withdrawal is in progress. +/
+@SerdeDiscriminator("type", "pending")
 struct RevenueWithdrawalStatePending
 {
     /// Type of the state, always “pending”
@@ -448,6 +449,7 @@ struct RevenueWithdrawalStatePending
 }
 
 /++ The withdrawal succeeded. +/
+@SerdeDiscriminator("type", "succeeded")
 struct RevenueWithdrawalStateSucceeded
 {
     /// Type of the state, always “succeeded”
@@ -459,6 +461,7 @@ struct RevenueWithdrawalStateSucceeded
 }
 
 /++ The withdrawal failed and the transaction was refunded. +/
+@SerdeDiscriminator("type", "failed")
 struct RevenueWithdrawalStateFailed
 {
     /// Type of the state, always “failed”
@@ -486,6 +489,7 @@ struct AffiliateInfo
 alias TransactionPartner = JsonableAlgebraicProxy!(TransactionPartnerAffiliateProgram, TransactionPartnerChat, TransactionPartnerFragment, TransactionPartnerOther, TransactionPartnerTelegramAds, TransactionPartnerTelegramApi, TransactionPartnerUser);
 
 /++ Describes a transaction with a user. +/
+@SerdeDiscriminator("type", "user")
 struct TransactionPartnerUser
 {
     /// Type of the transaction partner, always “user”
@@ -504,7 +508,8 @@ struct TransactionPartnerUser
     @serdeOptional
     Nullable!(long) subscription_period;
     /// Information about the paid media bought by the user; for “paid_media_payment” transactions only
-    // TODO(telega-generator): family type 'PaidMedia[]' can't be deserialized yet
+    @serdeOptional
+    Nullable!(PaidMedia[]) paid_media;
     /// Bot-specified paid media payload. Can be available only for “paid_media_payment” transactions.
     @serdeOptional
     Nullable!(string) paid_media_payload;
@@ -517,6 +522,7 @@ struct TransactionPartnerUser
 }
 
 /++ Describes a transaction with a chat. +/
+@SerdeDiscriminator("type", "chat")
 struct TransactionPartnerChat
 {
     /// Type of the transaction partner, always “chat”
@@ -529,6 +535,7 @@ struct TransactionPartnerChat
 }
 
 /++ Describes the affiliate program that issued the affiliate commission received via this transaction. +/
+@SerdeDiscriminator("type", "affiliate_program")
 struct TransactionPartnerAffiliateProgram
 {
     /// Type of the transaction partner, always “affiliate_program”
@@ -541,15 +548,18 @@ struct TransactionPartnerAffiliateProgram
 }
 
 /++ Describes a withdrawal transaction with Fragment. +/
+@SerdeDiscriminator("type", "fragment")
 struct TransactionPartnerFragment
 {
     /// Type of the transaction partner, always “fragment”
     string type;
     /// State of the transaction if the transaction is outgoing
-    // TODO(telega-generator): family type 'RevenueWithdrawalState' can't be deserialized yet
+    @serdeOptional
+    Nullable!(RevenueWithdrawalState) withdrawal_state;
 }
 
 /++ Describes a withdrawal transaction to the Telegram Ads platform. +/
+@SerdeDiscriminator("type", "telegram_ads")
 struct TransactionPartnerTelegramAds
 {
     /// Type of the transaction partner, always “telegram_ads”
@@ -557,6 +567,7 @@ struct TransactionPartnerTelegramAds
 }
 
 /++ Describes a transaction with payment for paid broadcasting. +/
+@SerdeDiscriminator("type", "telegram_api")
 struct TransactionPartnerTelegramApi
 {
     /// Type of the transaction partner, always “telegram_api”
@@ -566,6 +577,7 @@ struct TransactionPartnerTelegramApi
 }
 
 /++ Describes a transaction with an unknown source or recipient. +/
+@SerdeDiscriminator("type", "other")
 struct TransactionPartnerOther
 {
     /// Type of the transaction partner, always “other”
@@ -585,9 +597,11 @@ struct StarTransaction
     /// Date the transaction was created in Unix time
     long date;
     /// Source of an incoming transaction (e.g., a user purchasing goods or services, Fragment refunding a failed withdrawal). Only for incoming transactions.
-    // TODO(telega-generator): family type 'TransactionPartner' can't be deserialized yet
+    @serdeOptional
+    Nullable!(TransactionPartner) source;
     /// Receiver of an outgoing transaction (e.g., a user for a purchase refund, Fragment for a withdrawal). Only for outgoing transactions.
-    // TODO(telega-generator): family type 'TransactionPartner' can't be deserialized yet
+    @serdeOptional
+    Nullable!(TransactionPartner) receiver;
 }
 
 /++ Contains a list of Telegram Star transactions. +/

@@ -45,4 +45,27 @@ class VibedHttpClient: HttpClient
 
             return answer;
         }
+
+        string sendPostRequestRaw(string url, string contentType, in ubyte[] body)
+        {
+            string answer;
+
+            requestHTTP(url,
+                    (scope req) {
+                        req.method = HTTPMethod.POST;
+
+                        req.headers["Content-Type"] = contentType;
+                        req.writeBody(cast(const(ubyte)[]) body);
+                    },
+                    (scope res) {
+                        answer = res.bodyReader.readAllUTF8(true);
+                        logDebug("Response headers:\n  %s\n  %s", res, res.headers);
+                        logDebugV("Response body:\n  %s", answer);
+
+                        enforce(res.statusCode == 200, new TelegramException(res.statusCode.to!string~": "~res.statusPhrase));
+                    }
+                );
+
+            return answer;
+        }
 }

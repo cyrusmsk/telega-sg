@@ -1,4 +1,4 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.games;
@@ -6,7 +6,7 @@ module telega.telegram.generated.games;
 import asdf.serialization : serdeOptional;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 import telega.telegram.generated.basic;
 
 /++ This object represents an animation file (GIF or H.264/MPEG-4 AVC video without sound). +/

@@ -1,4 +1,4 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.passport;
@@ -6,7 +6,7 @@ module telega.telegram.generated.passport;
 import asdf.serialization : serdeOptional;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 
 /++ Describes Telegram Passport data shared with the bot by the user. +/
 struct PassportData
@@ -101,6 +101,7 @@ bool setPassportDataErrors(BotApi api, SetPassportDataErrorsMethod method)
 alias PassportElementError = JsonableAlgebraicProxy!(PassportElementErrorDataField, PassportElementErrorFile, PassportElementErrorFiles, PassportElementErrorFrontSide, PassportElementErrorReverseSide, PassportElementErrorSelfie, PassportElementErrorTranslationFile, PassportElementErrorTranslationFiles, PassportElementErrorUnspecified);
 
 /++ Represents an issue in one of the data fields that was provided by the user. The error is considered resolved when the field's value changes. +/
+@SerdeDiscriminator("source", "data")
 struct PassportElementErrorDataField
 {
     /// Error source, must be data
@@ -116,6 +117,7 @@ struct PassportElementErrorDataField
 }
 
 /++ Represents an issue with the front side of a document. The error is considered resolved when the file with the front side of the document changes. +/
+@SerdeDiscriminator("source", "front_side")
 struct PassportElementErrorFrontSide
 {
     /// Error source, must be front_side
@@ -129,6 +131,7 @@ struct PassportElementErrorFrontSide
 }
 
 /++ Represents an issue with the reverse side of a document. The error is considered resolved when the file with reverse side of the document changes. +/
+@SerdeDiscriminator("source", "reverse_side")
 struct PassportElementErrorReverseSide
 {
     /// Error source, must be reverse_side
@@ -142,6 +145,7 @@ struct PassportElementErrorReverseSide
 }
 
 /++ Represents an issue with the selfie with a document. The error is considered resolved when the file with the selfie changes. +/
+@SerdeDiscriminator("source", "selfie")
 struct PassportElementErrorSelfie
 {
     /// Error source, must be selfie
@@ -155,6 +159,7 @@ struct PassportElementErrorSelfie
 }
 
 /++ Represents an issue with a document scan. The error is considered resolved when the file with the document scan changes. +/
+@SerdeDiscriminator("source", "file")
 struct PassportElementErrorFile
 {
     /// Error source, must be file
@@ -168,6 +173,7 @@ struct PassportElementErrorFile
 }
 
 /++ Represents an issue with a list of scans. The error is considered resolved when the list of files containing the scans changes. +/
+@SerdeDiscriminator("source", "files")
 struct PassportElementErrorFiles
 {
     /// Error source, must be files
@@ -181,6 +187,7 @@ struct PassportElementErrorFiles
 }
 
 /++ Represents an issue with one of the files that constitute the translation of a document. The error is considered resolved when the file changes. +/
+@SerdeDiscriminator("source", "translation_file")
 struct PassportElementErrorTranslationFile
 {
     /// Error source, must be translation_file
@@ -194,6 +201,7 @@ struct PassportElementErrorTranslationFile
 }
 
 /++ Represents an issue with the translated version of a document. The error is considered resolved when a file with the document translation change. +/
+@SerdeDiscriminator("source", "translation_files")
 struct PassportElementErrorTranslationFiles
 {
     /// Error source, must be translation_files
@@ -207,6 +215,7 @@ struct PassportElementErrorTranslationFiles
 }
 
 /++ Represents an issue in an unspecified place. The error is considered resolved when new data is added. +/
+@SerdeDiscriminator("source", "unspecified")
 struct PassportElementErrorUnspecified
 {
     /// Error source, must be unspecified

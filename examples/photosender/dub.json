@@ -1,0 +1,9 @@
+{
+	"name": "photosender",
+	"description": "Send a photo to a chat by uploading a local file (generated API)",
+	"dependencies": {
+		"telega": {
+			"path": "../../"
+		}
+	}
+}

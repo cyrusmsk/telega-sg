@@ -1,6 +1,44 @@
 # Changelog
 
-## [0.3.0] - 2026-08-21
+## [0.4.0] - 2026-08-23
+### Added
+- `telega.serialization.Ref!T`: heap-backed recursive reference wrapper that enables
+  representation of self-referential Telegram types (Message.reply_to_message,
+  ChecklistTasksDone.message, SuggestedPost*.message, etc.)
+- Full `InputFile` support: filename, binary content, and multipart/form-data transport
+- `HttpClient.sendPostRequestRaw`: raw POST body transport for multipart file uploads
+- `BotApi.callMethod` automatic multipart detection for methods containing InputFile fields
+- `buildMultipartBody` helper with proper JSON-form-field and file-part encoding
+- Generator: recursive references emitted via `Ref!T` instead of being skipped
+- Generator: `InputFile` imported from `telega.botapi` instead of empty local struct
+- Legacy `InputFile` now aliases to the real runtime type for file upload support
+- Bot API 10.4 generated types and methods (HTML widgets, TON wallet cards, rich message quotes)
+- `examples/widgetbot`: interactive HTML widget using `sendWidget`, `answerWidgetQuery`
+  and `editMessageWidgetData`
+- `JsonableAlgebraicProxy` deserialization for family/union response fields, using
+  generator-emitted `@SerdeDiscriminator` constants and structural key matching
+- `JsonableAlgebraicProxy.hasValue`, `holds!T` and `get!T` accessors
+- Generator emits family union response fields instead of skipping them
+
+### Fixed
+- Issue #71: pinned message and replied message access now fully supported
+- Recursive Telegram types now deserialize/serialize correctly via `Ref!T`
+- File uploads work with both `default` (vibe-http) and `requests-driver` configurations
+
+### Changed
+- Generator now emits `import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;` universally
+- `JsonableAlgebraicProxy` stores union members on the heap, avoiding size cycles in recursive unions
+- Optional `chat_id` parameters are now `Nullable!ChatId`, matching Bot API 10.4
+- All dub configurations build and test successfully (both release and unittest)
+
+### Removed
+- Dropped the `dests` dependency. It was last released as 0.3.1 and supplied a
+  single function, `assertEq`, consumed only by `telega.test.assertEquals`.
+  That wrapper is now implemented directly on `std.format`, and it reports the
+  caller's file and line on failure instead of the wrapper's own location.
+  The library tests are plain `unittest` blocks run by `dub test`, so no test
+  framework was needed in its place.
+
 ### Added
 - API generator (`generator/`): parses https://core.telegram.org/bots/api with parserino
   and generates D types, methods, wrapper functions and DDOC for Bot API 10.x into

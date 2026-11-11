@@ -89,8 +89,9 @@ class GenerationContext
     string[string] moduleByName;
     /// Anchor id -> entity name
     string[string] nameById;
-    /// Set when some emitted code references InputFile
+
     bool inputfileReferenced;
+
     /// Value-type containment edges between custom types (cycle detection):
     /// container -> embedded type names
     string[][string] valueEdges;
@@ -158,16 +159,6 @@ class GenerationContext
 
         foreach (line; refs.importLines()) {
             out_.put(line);
-        }
-
-        // InputFile is referenced by the docs but never defined on its own page
-        if (moduleName == "basic" && inputfileReferenced && findEntity("InputFile") is null) {
-            out_.put("");
-            out_.put("/// This object represents the contents of a file to be uploaded.");
-            out_.put("/// Must be posted using multipart/form-data in the usual way.");
-            out_.put("struct InputFile");
-            out_.put("{");
-            out_.put("}");
         }
 
         if (auto p = moduleName in ENUM_BLOCKS) {
@@ -293,6 +284,9 @@ class GenerationContext
     {
         if (name == "InputFile") {
             inputfileReferenced = true;
+            refs.needsInputFile = true;
+
+            return;
         }
 
         foreach (family; MANUAL_FAMILIES) {
@@ -308,6 +302,8 @@ class GenerationContext
             if (*p != currentModule) {
                 refs.externalModules[*p] = true;
             }
+
+            return;
         }
     }
 
@@ -358,6 +354,14 @@ class GenerationContext
     string[] emitType(TelegramEntity entity, ref ModuleRefs refs)
     {
         string[] lines = ddoc(entity.description);
+
+        auto discriminator = findDiscriminator(entity.fields);
+
+        if (!discriminator.field.empty) {
+            lines ~= format("@SerdeDiscriminator(\"%s\", \"%s\")",
+                escapeDString(discriminator.field), escapeDString(discriminator.value));
+        }
+
         lines ~= format("struct %s", entity.name);
         lines ~= "{";
 
@@ -452,13 +456,6 @@ class GenerationContext
             return lines;
         }
 
-        if (r.isFamilyAlias && !isMethodParam) {
-            warn(format("%s.%s: family type %s is not supported on response objects, field skipped",
-                    entity.name, field.name, r.dType));
-            lines ~= format("    // TODO(telega-generator): family type '%s' can't be deserialized yet", r.dType);
-            return lines;
-        }
-
         if (!isMethodParam) {
             import std.string : endsWith;
 
@@ -469,9 +466,11 @@ class GenerationContext
             }
 
             if ((bare in moduleByName) !is null && createsCycle(entity.name, bare)) {
-                warn(format("%s.%s: recursive value type %s, field skipped",
+                warn(format("%s.%s: recursive value type %s emitted as heap-backed Ref",
                         entity.name, field.name, r.dType));
-                lines ~= format("    // TODO(telega-generator): recursive reference to '%s' can't be embedded by value", bare);
+                lines ~= "    @serdeOptional";
+                lines ~= format("    Ref!(%s) %s;", r.dType, declName);
+
                 return lines;
             }
         }
@@ -577,7 +576,8 @@ class GenerationContext
         }
 
         if (parts == ["InputFile", "String"]) {
-            r.dType = "string";
+            r.dType = "FileToSend";
+            r.refs ~= "InputFile";
             return r;
         }
 
@@ -632,12 +632,57 @@ bool sameMembers(in string[] a, in string[] b)
     return true;
 }
 
-/// Import requirements gathered while emitting one module
+private struct Discriminator
+{
+    string field;
+    string value;
+}
+
+/// Finds a field documented with a constant value ("always “x”" / "must be x").
+private Discriminator findDiscriminator(in Field[] fields)
+{
+    import std.regex : matchFirst, ctRegex;
+
+    static enum constantValue = ctRegex!(
+        `(?:always|must be)\s*(?:[“"]([^”"]+)[”"]|([a-z][a-z0-9_]*))`);
+
+    foreach (field; fields) {
+        if (field.name != "type" && field.name != "status" && field.name != "source") {
+            continue;
+        }
+
+        if (field.docType.baseName != "String" || field.docType.arrayDepth != 0 || field.docType.isUnion) {
+            continue;
+        }
+
+        if (auto m = matchFirst(field.description, constantValue)) {
+            auto value = m[1].empty ? m[2] : m[1];
+
+            if (!value.empty && value != "one" && value != "a" && value != "an") {
+                Discriminator result;
+                result.field = field.name;
+                result.value = value.idup;
+                return result;
+            }
+        }
+    }
+
+    return Discriminator.init;
+}
+
+private string escapeDString(string text)
+{
+    import std.array : replace;
+
+    return text.replace(`\`, `\\`).replace(`"`, `\"`);
+}
+
 struct ModuleRefs
 {
     bool needsBotApi;
     bool hasOptional;
     bool hasSerdeKeys;
+    bool needsInputFile;
     bool[string] externalModules;
 
     string[] importLines()
@@ -657,11 +702,17 @@ struct ModuleRefs
             lines ~= "import std.typecons : Nullable;";
         }
 
-        if (needsBotApi) {
-            lines ~= "import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;";
+        if (needsBotApi || needsInputFile) {
+            string[] names = ["BotApi", "ChatId", "HTTPMethod", "TelegramMethod"];
+
+            if (needsInputFile) {
+                names ~= "InputFile, FileToSend";
+            }
+
+            lines ~= "import telega.botapi : " ~ names.join(", ") ~ ";";
         }
 
-        lines ~= "import telega.serialization : JsonableAlgebraicProxy;";
+        lines ~= "import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;";
 
         auto mods = externalModules.keys;
         mods.sort();

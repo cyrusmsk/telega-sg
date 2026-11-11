@@ -1,4 +1,4 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.poll;
@@ -6,7 +6,7 @@ module telega.telegram.generated.poll;
 import asdf.serialization : serdeOptional, serdeKeys;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 import telega.telegram.generated.basic;
 import telega.telegram.generated.games;
 import telega.telegram.generated.stickers;
@@ -96,7 +96,8 @@ struct InputPollOption
     @serdeOptional
     Nullable!(MessageEntity[]) text_entities;
     /// Media added to the poll option
-    // TODO(telega-generator): family type 'InputPollOptionMedia' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputPollOptionMedia) media;
 }
 
 /++ This object represents an answer of a user in a non-anonymous poll. +/
@@ -181,7 +182,7 @@ struct SendPollMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username. Polls can't be sent to channel direct messages chats.
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username. Polls can't be sent to channel direct messages chats.
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -292,7 +293,7 @@ struct StopPollMethod
     /// Unique identifier of the business connection on behalf of which the message to be edited was sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Identifier of the original message with the poll
     long message_id;

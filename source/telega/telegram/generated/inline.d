@@ -1,4 +1,4 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.inline;
@@ -6,7 +6,7 @@ module telega.telegram.generated.inline;
 import asdf.serialization : serdeOptional;
 import std.typecons : Nullable;
 import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 import telega.telegram.generated.basic;
 import telega.telegram.generated.payments;
 import telega.telegram.generated.rich;
@@ -74,6 +74,7 @@ struct InlineQueryResultsButton
 alias InlineQueryResult = JsonableAlgebraicProxy!(InlineQueryResultArticle, InlineQueryResultAudio, InlineQueryResultCachedAudio, InlineQueryResultCachedDocument, InlineQueryResultCachedGif, InlineQueryResultCachedMpeg4Gif, InlineQueryResultCachedPhoto, InlineQueryResultCachedSticker, InlineQueryResultCachedVideo, InlineQueryResultCachedVoice, InlineQueryResultContact, InlineQueryResultDocument, InlineQueryResultGame, InlineQueryResultGif, InlineQueryResultLocation, InlineQueryResultMpeg4Gif, InlineQueryResultPhoto, InlineQueryResultVenue, InlineQueryResultVideo, InlineQueryResultVoice);
 
 /++ Represents a link to an article or web page. +/
+@SerdeDiscriminator("type", "article")
 struct InlineQueryResultArticle
 {
     /// Type of the result, must be article
@@ -83,7 +84,7 @@ struct InlineQueryResultArticle
     /// Title of the result
     string title;
     /// Content of the message to be sent
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    InputMessageContent input_message_content;
     /// Inline keyboard attached to the message
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
@@ -105,6 +106,7 @@ struct InlineQueryResultArticle
 }
 
 /++ Represents a link to a photo. By default, this photo will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo. +/
+@SerdeDiscriminator("type", "photo")
 struct InlineQueryResultPhoto
 {
     /// Type of the result, must be photo
@@ -143,10 +145,12 @@ struct InlineQueryResultPhoto
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the photo
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to an animated GIF file. By default, this animated GIF file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation. +/
+@SerdeDiscriminator("type", "gif")
 struct InlineQueryResultGif
 {
     /// Type of the result, must be gif
@@ -188,10 +192,12 @@ struct InlineQueryResultGif
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the GIF animation
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By default, this animated MPEG-4 file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation. +/
+@SerdeDiscriminator("type", "mpeg4_gif")
 struct InlineQueryResultMpeg4Gif
 {
     /// Type of the result, must be mpeg4_gif
@@ -233,7 +239,8 @@ struct InlineQueryResultMpeg4Gif
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the video animation
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++
@@ -241,6 +248,7 @@ Represents a link to a page containing an embedded video player or a video file.
 
 If an InlineQueryResultVideo message contains an embedded video (e.g., YouTube), you must replace its content using input_message_content.
 +/
+@SerdeDiscriminator("type", "video")
 struct InlineQueryResultVideo
 {
     /// Type of the result, must be video
@@ -283,10 +291,12 @@ struct InlineQueryResultVideo
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the video. This field is required if InlineQueryResultVideo is used to send an HTML-page as a result (e.g., a YouTube video).
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to an MP3 audio file. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio. +/
+@SerdeDiscriminator("type", "audio")
 struct InlineQueryResultAudio
 {
     /// Type of the result, must be audio
@@ -316,10 +326,12 @@ struct InlineQueryResultAudio
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the audio
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to a voice recording in an .OGG container encoded with OPUS. By default, this voice recording will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the the voice message. +/
+@SerdeDiscriminator("type", "voice")
 struct InlineQueryResultVoice
 {
     /// Type of the result, must be voice
@@ -346,10 +358,12 @@ struct InlineQueryResultVoice
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the voice recording
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to a file. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. Currently, only .PDF and .ZIP files can be sent using this method. +/
+@SerdeDiscriminator("type", "document")
 struct InlineQueryResultDocument
 {
     /// Type of the result, must be document
@@ -378,7 +392,8 @@ struct InlineQueryResultDocument
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the file
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
     /// URL of the thumbnail (JPEG only) for the file
     @serdeOptional
     Nullable!(string) thumbnail_url;
@@ -391,6 +406,7 @@ struct InlineQueryResultDocument
 }
 
 /++ Represents a location on a map. By default, the location will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the location. +/
+@SerdeDiscriminator("type", "location")
 struct InlineQueryResultLocation
 {
     /// Type of the result, must be location
@@ -419,7 +435,8 @@ struct InlineQueryResultLocation
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the location
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
     /// Url of the thumbnail for the result
     @serdeOptional
     Nullable!(string) thumbnail_url;
@@ -432,6 +449,7 @@ struct InlineQueryResultLocation
 }
 
 /++ Represents a venue. By default, the venue will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the venue. +/
+@SerdeDiscriminator("type", "venue")
 struct InlineQueryResultVenue
 {
     /// Type of the result, must be venue
@@ -462,7 +480,8 @@ struct InlineQueryResultVenue
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the venue
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
     /// Url of the thumbnail for the result
     @serdeOptional
     Nullable!(string) thumbnail_url;
@@ -475,6 +494,7 @@ struct InlineQueryResultVenue
 }
 
 /++ Represents a contact with a phone number. By default, this contact will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the contact. +/
+@SerdeDiscriminator("type", "contact")
 struct InlineQueryResultContact
 {
     /// Type of the result, must be contact
@@ -495,7 +515,8 @@ struct InlineQueryResultContact
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the contact
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
     /// Url of the thumbnail for the result
     @serdeOptional
     Nullable!(string) thumbnail_url;
@@ -508,6 +529,7 @@ struct InlineQueryResultContact
 }
 
 /++ Represents a Game. +/
+@SerdeDiscriminator("type", "game")
 struct InlineQueryResultGame
 {
     /// Type of the result, must be game
@@ -522,6 +544,7 @@ struct InlineQueryResultGame
 }
 
 /++ Represents a link to a photo stored on the Telegram servers. By default, this photo will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo. +/
+@SerdeDiscriminator("type", "photo")
 struct InlineQueryResultCachedPhoto
 {
     /// Type of the result, must be photo
@@ -552,10 +575,12 @@ struct InlineQueryResultCachedPhoto
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the photo
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to an animated GIF file stored on the Telegram servers. By default, this animated GIF file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with specified content instead of the animation. +/
+@SerdeDiscriminator("type", "gif")
 struct InlineQueryResultCachedGif
 {
     /// Type of the result, must be gif
@@ -583,10 +608,12 @@ struct InlineQueryResultCachedGif
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the GIF animation
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to a video animation (H.264/MPEG-4 AVC video without sound) stored on the Telegram servers. By default, this animated MPEG-4 file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation. +/
+@SerdeDiscriminator("type", "mpeg4_gif")
 struct InlineQueryResultCachedMpeg4Gif
 {
     /// Type of the result, must be mpeg4_gif
@@ -614,10 +641,12 @@ struct InlineQueryResultCachedMpeg4Gif
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the video animation
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to a sticker stored on the Telegram servers. By default, this sticker will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the sticker. +/
+@SerdeDiscriminator("type", "sticker")
 struct InlineQueryResultCachedSticker
 {
     /// Type of the result, must be sticker
@@ -630,10 +659,12 @@ struct InlineQueryResultCachedSticker
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the sticker
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to a file stored on the Telegram servers. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. +/
+@SerdeDiscriminator("type", "document")
 struct InlineQueryResultCachedDocument
 {
     /// Type of the result, must be document
@@ -660,10 +691,12 @@ struct InlineQueryResultCachedDocument
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the file
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to a video file stored on the Telegram servers. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video. +/
+@SerdeDiscriminator("type", "video")
 struct InlineQueryResultCachedVideo
 {
     /// Type of the result, must be video
@@ -693,10 +726,12 @@ struct InlineQueryResultCachedVideo
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the video
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to a voice message stored on the Telegram servers. By default, this voice message will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the voice message. +/
+@SerdeDiscriminator("type", "voice")
 struct InlineQueryResultCachedVoice
 {
     /// Type of the result, must be voice
@@ -720,10 +755,12 @@ struct InlineQueryResultCachedVoice
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the voice message
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
 /++ Represents a link to an MP3 audio file stored on the Telegram servers. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio. +/
+@SerdeDiscriminator("type", "audio")
 struct InlineQueryResultCachedAudio
 {
     /// Type of the result, must be audio
@@ -745,10 +782,11 @@ struct InlineQueryResultCachedAudio
     @serdeOptional
     Nullable!(InlineKeyboardMarkup) reply_markup;
     /// Content of the message to be sent instead of the audio
-    // TODO(telega-generator): family type 'InputMessageContent' can't be deserialized yet
+    @serdeOptional
+    Nullable!(InputMessageContent) input_message_content;
 }
 
-alias InputMessageContent = JsonableAlgebraicProxy!(InputContactMessageContent, InputInvoiceMessageContent, InputLocationMessageContent, InputRichMessageContent, InputTextMessageContent, InputVenueMessageContent);
+alias InputMessageContent = JsonableAlgebraicProxy!(InputContactMessageContent, InputInvoiceMessageContent, InputLocationMessageContent, InputRichMessageContent, InputSharedWidgetMessageContent, InputTextMessageContent, InputVenueMessageContent, InputWidgetMessageContent);
 
 /++ Represents the content of a text message to be sent as the result of an inline query. +/
 struct InputTextMessageContent
@@ -769,7 +807,7 @@ struct InputTextMessageContent
 /++ Represents the content of a rich message to be sent as the result of an inline query. +/
 struct InputRichMessageContent
 {
-    /// The message to be sent
+    /// The message to be sent. Only previously uploaded files may be used in the message.
     InputRichMessage rich_message;
 }
 
@@ -892,6 +930,65 @@ struct InputInvoiceMessageContent
     /// Pass True if the final price depends on the shipping method. Ignored for payments in Telegram Stars.
     @serdeOptional
     Nullable!(bool) is_flexible;
+}
+
+/++ Represents the content of a message with an HTML widget to be sent as the result of an inline query. Currently, widgets can't be sent in response to inline queries in the production environment. +/
+struct InputWidgetMessageContent
+{
+    /// HTML code of the widget, 1-32768 bytes. The code must not exceed 4096 bytes when compressed by zlib with the maximum compression level.
+    string html;
+    /// Width of the widget in logical pixels; omit if the widget must occupy the whole width of the message bubble. The width is clamped by the app to the range from 200 to the maximum width of the message bubble.
+    @serdeOptional
+    Nullable!(long) width;
+    /// Height of the widget in logical pixels; omit if the height of the widget isn't fixed. The height is clamped by the app to the range 50-600.
+    @serdeOptional
+    Nullable!(long) height;
+    /// Public data of the widget, 0-1024 bytes, which will be available wherever the widget is shown. If the widget is shared, then all messages with it will have the same public data.
+    @serdeOptional
+    Nullable!(string) public_data;
+    /// Data of the widget, which is specific to the message, 0-1024 bytes
+    @serdeOptional
+    Nullable!(string) chat_data;
+    /// Widget caption, 0-1024 characters after entities parsing
+    @serdeOptional
+    Nullable!(string) caption;
+    /// Mode for parsing entities in the widget caption. See formatting options for more details.
+    @serdeOptional
+    Nullable!(string) parse_mode;
+    /// List of special entities that appear in the caption, which can be specified instead of parse_mode
+    @serdeOptional
+    Nullable!(MessageEntity[]) caption_entities;
+    /// Pass True if the caption must be shown above the widget
+    @serdeOptional
+    Nullable!(bool) show_caption_above_media;
+    /// Pass True to allow the widget to send queries to the bot
+    @serdeOptional
+    Nullable!(bool) allow_queries;
+    /// Pass True to create a shared widget. Each message sent from the result creates a separate shared widget, whose identifier is received by the bot only in the field widget_id of queries from the widget. To send an existing shared widget in response to an inline query, use InputSharedWidgetMessageContent instead.
+    @serdeOptional
+    Nullable!(bool) is_shared;
+}
+
+/++ Represents the content of a message with a shared widget to be sent as the result of an inline query. Currently, widgets can't be sent in response to inline queries in the production environment. +/
+struct InputSharedWidgetMessageContent
+{
+    /// Unique identifier of the shared widget created by the bot
+    string widget_id;
+    /// Data of the widget, which is specific to the message, 0-1024 bytes
+    @serdeOptional
+    Nullable!(string) chat_data;
+    /// Widget caption, 0-1024 characters after entities parsing
+    @serdeOptional
+    Nullable!(string) caption;
+    /// Mode for parsing entities in the widget caption. See formatting options for more details.
+    @serdeOptional
+    Nullable!(string) parse_mode;
+    /// List of special entities that appear in the caption, which can be specified instead of parse_mode
+    @serdeOptional
+    Nullable!(MessageEntity[]) caption_entities;
+    /// Pass True if the caption must be shown above the widget
+    @serdeOptional
+    Nullable!(bool) show_caption_above_media;
 }
 
 /++

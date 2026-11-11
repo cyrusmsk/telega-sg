@@ -23,7 +23,7 @@ int main(string[] args)
 
 void listenUpdates(string botToken)
 {
-    import telega.botapi : BotApi;
+    import telega.botapi : BotApi, ChatId;
     import telega.telegram.generated.webhook :
         Update, GetUpdatesMethod, getUpdates;
     import telega.telegram.generated.basic :
@@ -47,7 +47,7 @@ void listenUpdates(string botToken)
                 if (!update.message.isNull && !update.message.get.text.isNull)
                 {
                     SendMessageMethod sm;
-                    sm.chat_id = update.message.get.chat.id;
+                    sm.chat_id = ChatId(update.message.get.chat.id);
                     sm.text = update.message.get.text.get;
 
                     logInfo("Text from %s: %s", sm.chat_id, sm.text);

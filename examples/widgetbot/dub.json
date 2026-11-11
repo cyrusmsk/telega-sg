@@ -1,0 +1,9 @@
+{
+	"name": "widgetbot",
+	"description": "Interactive HTML widget example (Bot API 10.4)",
+	"dependencies": {
+		"telega": {
+			"path": "../../"
+		}
+	}
+}

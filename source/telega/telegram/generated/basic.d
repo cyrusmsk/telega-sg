@@ -1,12 +1,12 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.basic;
 
 import asdf.serialization : serdeOptional, serdeKeys;
 import std.typecons : Nullable;
-import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod, InputFile, FileToSend;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 import telega.telegram.generated.games;
 import telega.telegram.generated.inline;
 import telega.telegram.generated.passport;
@@ -14,12 +14,6 @@ import telega.telegram.generated.payments;
 import telega.telegram.generated.poll;
 import telega.telegram.generated.rich;
 import telega.telegram.generated.stickers;
-
-/// This object represents the contents of a file to be uploaded.
-/// Must be posted using multipart/form-data in the usual way.
-struct InputFile
-{
-}
 
 /// Enum of chat types
 enum ChatType : string
@@ -277,7 +271,8 @@ struct ChatFullInfo
     @serdeOptional
     Nullable!(Chat) parent_chat;
     /// List of available reactions allowed in the chat. If omitted, then all emoji reactions are allowed.
-    // TODO(telega-generator): family type 'ReactionType[]' can't be deserialized yet
+    @serdeOptional
+    Nullable!(ReactionType[]) available_reactions;
     /// Custom emoji identifier of the emoji chosen by the chat for the reply header and link preview background
     @serdeOptional
     Nullable!(string) background_custom_emoji_id;
@@ -379,6 +374,12 @@ struct ChatFullInfo
     /// The Community to which the chat belongs
     @serdeOptional
     Nullable!(Community) community;
+    /// For private chats, the TON wallet card of the user, which is shown on their profile page
+    @serdeOptional
+    Nullable!(TonWalletCard) ton_wallet_card;
+    /// For private chats, supergroups and channels, the theme of the screen for sharing a link to the user or the chat; omitted if the default theme is used
+    @serdeOptional
+    Nullable!(ChatShareTheme) share_theme;
 }
 
 /++ This object represents a message. +/
@@ -424,7 +425,8 @@ struct Message
     /// Chat the message belongs to
     Chat chat;
     /// Information about the original message for forwarded messages
-    // TODO(telega-generator): family type 'MessageOrigin' can't be deserialized yet
+    @serdeOptional
+    Nullable!(MessageOrigin) forward_origin;
     /// True, if the message is sent to a topic in a forum supergroup or a private chat with the bot
     @serdeOptional
     Nullable!(bool) is_topic_message;
@@ -432,7 +434,8 @@ struct Message
     @serdeOptional
     Nullable!(bool) is_automatic_forward;
     /// For replies in the same chat and message thread, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply. If the message is a reply to an ephemeral message, then this field may be omitted.
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) reply_to_message;
     /// Information about the message that is being replied to, which may come from another chat or forum topic
     @serdeOptional
     Nullable!(ExternalReplyInfo) external_reply;
@@ -529,13 +532,16 @@ struct Message
     /// Message is a voice message, information about the file
     @serdeOptional
     Nullable!(Voice) voice;
-    /// Caption for the animation, audio, document, paid media, photo, video or voice
+    /// Message is an HTML widget, information about the widget
+    @serdeOptional
+    Nullable!(Widget) widget;
+    /// Caption for the animation, audio, document, live photo, paid media, photo, video, voice, or widget
     @serdeOptional
     Nullable!(string) caption;
     /// For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption
     @serdeOptional
     Nullable!(MessageEntity[]) caption_entities;
-    /// True, if the caption must be shown above the message media
+    /// True, if the caption must be shown above the message media or the widget
     @serdeOptional
     Nullable!(bool) show_caption_above_media;
     /// True, if the message media is covered by a spoiler animation
@@ -602,7 +608,8 @@ struct Message
     @serdeOptional
     Nullable!(long) migrate_from_chat_id;
     /// Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
-    // TODO(telega-generator): family type 'MaybeInaccessibleMessage' can't be deserialized yet
+    @serdeOptional
+    Nullable!(MaybeInaccessibleMessage) pinned_message;
     /// Message is an invoice for a payment, information about the invoice. More about payments »
     @serdeOptional
     Nullable!(Invoice) invoice;
@@ -646,13 +653,18 @@ struct Message
     @serdeOptional
     Nullable!(ChatBackground) chat_background_set;
     /// Service message: some tasks in a checklist were marked as done or not done
-    // TODO(telega-generator): recursive reference to 'ChecklistTasksDone' can't be embedded by value
+    @serdeOptional
+    Ref!(ChecklistTasksDone) checklist_tasks_done;
     /// Service message: tasks were added to a checklist
-    // TODO(telega-generator): recursive reference to 'ChecklistTasksAdded' can't be embedded by value
-    /// Service message: chat added to a Community
+    @serdeOptional
+    Ref!(ChecklistTasksAdded) checklist_tasks_added;
+    /// Service message: chat or bot added to a Community
     @serdeOptional
     Nullable!(CommunityChatAdded) community_chat_added;
-    /// Service message: chat removed from a Community
+    /// Service message: chat was joined by a user from a Community
+    @serdeOptional
+    Nullable!(CommunityChatJoined) community_chat_joined;
+    /// Service message: chat or bot removed from a Community
     @serdeOptional
     Nullable!(CommunityChatRemoved) community_chat_removed;
     /// Service message: the price for paid messages in the corresponding direct messages chat of a channel has changed
@@ -686,13 +698,17 @@ struct Message
     @serdeOptional
     Nullable!(GiveawayWinners) giveaway_winners;
     /// Service message: a giveaway without public winners was completed
-    // TODO(telega-generator): recursive reference to 'GiveawayCompleted' can't be embedded by value
+    @serdeOptional
+    Ref!(GiveawayCompleted) giveaway_completed;
     /// Service message: user created a bot that will be managed by the current bot
     @serdeOptional
     Nullable!(ManagedBotCreated) managed_bot_created;
     /// Service message: the price for paid messages has changed in the chat
     @serdeOptional
     Nullable!(PaidMessagePriceChanged) paid_message_price_changed;
+    /// Service message: the sender of the message used a link of the other user, which allows sending messages to the user without paying Telegram Stars
+    @serdeOptional
+    Nullable!(PaidMessagesWaived) paid_messages_waived;
     /// Service message: answer option was added to a poll
     @serdeOptional
     Nullable!(PollOptionAdded) poll_option_added;
@@ -700,15 +716,23 @@ struct Message
     @serdeOptional
     Nullable!(PollOptionDeleted) poll_option_deleted;
     /// Service message: a suggested post was approved
-    // TODO(telega-generator): recursive reference to 'SuggestedPostApproved' can't be embedded by value
+    @serdeOptional
+    Ref!(SuggestedPostApproved) suggested_post_approved;
     /// Service message: approval of a suggested post has failed
-    // TODO(telega-generator): recursive reference to 'SuggestedPostApprovalFailed' can't be embedded by value
+    @serdeOptional
+    Ref!(SuggestedPostApprovalFailed) suggested_post_approval_failed;
     /// Service message: a suggested post was declined
-    // TODO(telega-generator): recursive reference to 'SuggestedPostDeclined' can't be embedded by value
+    @serdeOptional
+    Ref!(SuggestedPostDeclined) suggested_post_declined;
     /// Service message: payment for a suggested post was received
-    // TODO(telega-generator): recursive reference to 'SuggestedPostPaid' can't be embedded by value
+    @serdeOptional
+    Ref!(SuggestedPostPaid) suggested_post_paid;
     /// Service message: payment for a suggested post was refunded
-    // TODO(telega-generator): recursive reference to 'SuggestedPostRefunded' can't be embedded by value
+    @serdeOptional
+    Ref!(SuggestedPostRefunded) suggested_post_refunded;
+    /// Service message: a transfer with a TON wallet
+    @serdeOptional
+    Nullable!(TonWalletTransfer) ton_wallet_transfer;
     /// Service message: video chat scheduled
     @serdeOptional
     Nullable!(VideoChatScheduled) video_chat_scheduled;
@@ -752,7 +776,7 @@ alias MaybeInaccessibleMessage = JsonableAlgebraicProxy!(InaccessibleMessage, Me
 /++ This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc. +/
 struct MessageEntity
 {
-    /// Type of the entity. Currently, can be “mention” (@username), “hashtag” (#hashtag or #hashtag@chatusername), “cashtag” ($$USD or $$USD@chatusername), “bot_command” (/start@jobs_bot), “url” (https://telegram.org), “email” (do-not-reply@telegram.org), “phone_number” (+1-212-555-0123), “bold” (bold text), “italic” (italic text), “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “blockquote” (block quotation), “expandable_blockquote” (collapsed-by-default block quotation), “code” (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs), “text_mention” (for users without usernames), “custom_emoji” (for inline custom emoji stickers), or “date_time” (for formatted date and time).
+    /// Type of the entity. Currently, can be “mention” (@username), “hashtag” (#hashtag or #hashtag@chatusername), “cashtag” ($$USD or $$USD@chatusername), “bot_command” (/start@jobs_bot), “url” (https://telegram.org), “email” (do-not-reply@telegram.org), “phone_number” (+1-212-555-0123), “bank_card_number” (bank card number), “ton_address” (address in the TON blockchain), “bold” (bold text), “italic” (italic text), “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “blockquote” (block quotation), “expandable_blockquote” (collapsed-by-default block quotation), “code” (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs), “text_mention” (for users without usernames), “custom_emoji” (for inline custom emoji stickers), or “date_time” (for formatted date and time).
     string type;
     /// Offset in UTF-16 code units to the start of the entity
     long offset;
@@ -781,12 +805,15 @@ struct MessageEntity
 /++ This object contains information about the quoted part of a message that is replied to by the given message. +/
 struct TextQuote
 {
-    /// Text of the quoted part of a message that is replied to by the given message
+    /// Text of the quoted part of a message that is replied to by the given message; may be empty if the quote was chosen from a rich message
     string text;
     /// Special entities that appear in the quote. Currently, only bold, italic, underline, strikethrough, spoiler, custom_emoji, and date_time entities are kept in quotes.
     @serdeOptional
     Nullable!(MessageEntity[]) entities;
-    /// Approximate quote position in the original message in UTF-16 code units as specified by the sender
+    /// Rich text of the quote if it was chosen from a rich message. May contain only plain text, RichTextBold, RichTextItalic, RichTextUnderline, RichTextStrikethrough, RichTextSpoiler, RichTextSubscript, RichTextSuperscript, RichTextDateTime, RichTextCustomEmoji, RichTextMathematicalExpression, and arrays of them.
+    @serdeOptional
+    Nullable!(RichText[]) rich_texts;
+    /// Approximate quote position in the original message in UTF-16 code units as specified by the sender. For quotes from rich messages, it is the position in the text formed by joining plain texts of all quotable texts of the message, separated by line feeds.
     long position;
     /// True, if the quote was chosen manually by the message sender. Otherwise, the quote was added automatically by the server.
     @serdeOptional
@@ -797,7 +824,7 @@ struct TextQuote
 struct ExternalReplyInfo
 {
     /// Origin of the message replied to by the given message
-    // TODO(telega-generator): family type 'MessageOrigin' can't be deserialized yet
+    MessageOrigin origin;
     /// Chat the original message belongs to. Available only if the chat is a supergroup or a channel.
     @serdeOptional
     Nullable!(Chat) chat;
@@ -840,6 +867,9 @@ struct ExternalReplyInfo
     /// Message is a voice message, information about the file
     @serdeOptional
     Nullable!(Voice) voice;
+    /// Message is an HTML widget, information about the widget
+    @serdeOptional
+    Nullable!(Widget) widget;
     /// True, if the message media is covered by a spoiler animation
     @serdeOptional
     Nullable!(bool) has_media_spoiler;
@@ -881,7 +911,7 @@ struct ReplyParameters
     /// Identifier of the message that will be replied to in the current chat, or in the chat chat_id if it is specified. Required if ephemeral_message_id isn't specified.
     @serdeOptional
     Nullable!(long) message_id;
-    /// If the message to be replied to is from a different chat, unique identifier for the chat or username of the bot, supergroup or channel in the format @username. Not supported for messages sent on behalf of a business account, messages from channel direct messages chats and ephemeral messages.
+    /// If the message to be replied to is from a different chat, unique identifier for the chat or username of the bot, supergroup, or channel in the format @username. Not supported for messages sent on behalf of a business account, messages from channel direct messages chats and ephemeral messages.
     @serdeOptional
     Nullable!(ChatId) chat_id;
     /// Identifier of the incoming ephemeral message that will be replied to in the current chat. A reply to an ephemeral message must itself be an ephemeral message. An ephemeral message may only be replied to within 15 seconds of being sent. Required if message_id isn't specified.
@@ -899,7 +929,10 @@ struct ReplyParameters
     /// A JSON-serialized list of special entities that appear in the quote. It can be specified instead of quote_parse_mode.
     @serdeOptional
     Nullable!(MessageEntity[]) quote_entities;
-    /// Position of the quote in the original message in UTF-16 code units
+    /// A JSON-serialized list of quoted parts of the rich message to be replied to. Must contain one element for each quoted text of the message in the order of their appearance. Each of the following is a separate quoted text: the text of a paragraph, a heading, a preformatted block, a footer, or a mathematical expression; the text and the credit of a block quotation or a pull quotation; the summary of a details block; the caption and each cell of a table; the text and the credit of a caption of a media block, a collage, a slideshow, or a map. Texts of blocks nested in lists, block quotations, details, collages, and slideshows are separate quoted texts too. The first and the last elements can contain only a part of the corresponding text; all other elements must contain the whole text. Formatting of the quoted parts must be kept, and rich texts must be nested in the same way as in the message received from the server. Mathematical expressions must be quoted entirely. Buttons in RichBlockButtons, anchors and dividers can't be quoted. Up to 32 quoted texts with total length up to 1024 characters can be specified. Only plain text, RichTextBold, RichTextItalic, RichTextUnderline, RichTextStrikethrough, RichTextSpoiler, RichTextSubscript, RichTextSuperscript, RichTextDateTime, RichTextCustomEmoji, RichTextMathematicalExpression, and arrays of them are kept in the quote; other rich text types are replaced with their text. If non-empty, then quote, quote_parse_mode and quote_entities are ignored.
+    @serdeOptional
+    Nullable!(RichText[]) quote_rich_texts;
+    /// Position of the quote in the original message in UTF-16 code units. For quotes from rich messages, it is the position in the text formed by joining plain texts of all quotable texts of the message, separated by line feeds.
     @serdeOptional
     Nullable!(long) quote_position;
     /// Identifier of the specific checklist task to be replied to
@@ -910,9 +943,23 @@ struct ReplyParameters
     Nullable!(string) poll_option_id;
 }
 
+struct EphemeralMessageParameters
+{
+    /// Identifier of the user who will receive the message; required unless the message is sent as an ephemeral reply to a callback query. If omitted, then the parameter chat_id of the method is ignored. If specified together with callback_query_id, then it must be the identifier of the user who pressed the button. Must be omitted for messages sent in chats where the bot isn't a member, unless the message is a reply to an ephemeral message. It is not guaranteed that the user will receive the message, especially if they are offline. See here for more details.
+    @serdeOptional
+    Nullable!(long) receiver_user_id;
+    /// Identifier of the callback query which triggered the message, if any. If specified and receiver_user_id is omitted, then the message is sent as an ephemeral reply to the callback query and will be shown only to the user who pressed the button. Ephemeral replies can't be sent to callback queries from messages in channel direct messages chats. The bot must still answer the callback query using answerCallbackQuery.
+    @serdeOptional
+    Nullable!(string) callback_query_id;
+    /// Pass True if the ephemeral message must be shown in place of the original message. Must be False for callback queries from ephemeral messages, which must be edited using regular editEphemeralMessage… methods.
+    @serdeOptional
+    Nullable!(bool) replace_callback_query_message;
+}
+
 alias MessageOrigin = JsonableAlgebraicProxy!(MessageOriginChannel, MessageOriginChat, MessageOriginHiddenUser, MessageOriginUser);
 
 /++ The message was originally sent by a known user. +/
+@SerdeDiscriminator("type", "user")
 struct MessageOriginUser
 {
     /// Type of the message origin, always “user”
@@ -924,6 +971,7 @@ struct MessageOriginUser
 }
 
 /++ The message was originally sent by an unknown user. +/
+@SerdeDiscriminator("type", "hidden_user")
 struct MessageOriginHiddenUser
 {
     /// Type of the message origin, always “hidden_user”
@@ -935,6 +983,7 @@ struct MessageOriginHiddenUser
 }
 
 /++ The message was originally sent on behalf of a chat to a group chat. +/
+@SerdeDiscriminator("type", "chat")
 struct MessageOriginChat
 {
     /// Type of the message origin, always “chat”
@@ -949,6 +998,7 @@ struct MessageOriginChat
 }
 
 /++ The message was originally sent to a channel chat. +/
+@SerdeDiscriminator("type", "channel")
 struct MessageOriginChannel
 {
     /// Type of the message origin, always “channel”
@@ -1117,7 +1167,7 @@ struct Video
     Nullable!(long) file_size;
 }
 
-/++ This object represents a video message (available in Telegram apps as of v.4.0). +/
+/++ This object represents a video message. +/
 struct VideoNote
 {
     /// Identifier for this file, which can be used to download or reuse the file
@@ -1153,18 +1203,41 @@ struct Voice
     Nullable!(long) file_size;
 }
 
+/++ This object describes an HTML widget. +/
+struct Widget
+{
+    /// Unique identifier of the shared widget, which can be used to send the widget again using the method sendSharedWidget; omitted if the widget isn't shared
+    @serdeOptional
+    Nullable!(string) id;
+    /// Width of the widget in logical pixels; omitted if the widget must occupy the whole width of the message bubble
+    @serdeOptional
+    Nullable!(long) width;
+    /// Height of the widget in logical pixels; omitted if the height of the widget isn't fixed
+    @serdeOptional
+    Nullable!(long) height;
+    /// HTML code of the widget
+    string html;
+    /// Public data of the widget, which is available wherever the widget is shown. All messages with a shared widget have the same public data.
+    @serdeOptional
+    Nullable!(string) public_data;
+    /// Data of the widget, which is specific to the message
+    @serdeOptional
+    Nullable!(string) chat_data;
+}
+
 /++ Describes the paid media added to a message. +/
 struct PaidMediaInfo
 {
     /// The number of Telegram Stars that must be paid to buy access to the media
     long star_count;
     /// Information about the paid media
-    // TODO(telega-generator): family type 'PaidMedia[]' can't be deserialized yet
+    PaidMedia[] paid_media;
 }
 
 alias PaidMedia = JsonableAlgebraicProxy!(PaidMediaLivePhoto, PaidMediaPhoto, PaidMediaPreview, PaidMediaVideo);
 
 /++ The paid media is a live photo. +/
+@SerdeDiscriminator("type", "live_photo")
 struct PaidMediaLivePhoto
 {
     /// Type of the paid media, always “live_photo”
@@ -1174,6 +1247,7 @@ struct PaidMediaLivePhoto
 }
 
 /++ The paid media is a photo. +/
+@SerdeDiscriminator("type", "photo")
 struct PaidMediaPhoto
 {
     /// Type of the paid media, always “photo”
@@ -1183,6 +1257,7 @@ struct PaidMediaPhoto
 }
 
 /++ The paid media isn't available before the payment. +/
+@SerdeDiscriminator("type", "preview")
 struct PaidMediaPreview
 {
     /// Type of the paid media, always “preview”
@@ -1199,6 +1274,7 @@ struct PaidMediaPreview
 }
 
 /++ The paid media is a video. +/
+@SerdeDiscriminator("type", "video")
 struct PaidMediaVideo
 {
     /// Type of the paid media, always “video”
@@ -1416,11 +1492,24 @@ struct BotSubscriptionUpdated
     string state;
 }
 
+/++ This object describes an update about a user stopping message generation. +/
+struct MessageGenerationStopped
+{
+    /// Chat in which the message is generated
+    Chat chat;
+    /// Unique identifier of the message thread in which the message is generated
+    @serdeOptional
+    Nullable!(long) message_thread_id;
+    /// Unique identifier of the message draft which was stopped
+    long draft_id;
+}
+
 /++ Describes a service message about an option added to a poll. +/
 struct PollOptionAdded
 {
     /// Message containing the poll to which the option was added, if known. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): family type 'MaybeInaccessibleMessage' can't be deserialized yet
+    @serdeOptional
+    Nullable!(MaybeInaccessibleMessage) poll_message;
     /// Unique identifier of the added option
     string option_persistent_id;
     /// Option text
@@ -1434,7 +1523,8 @@ struct PollOptionAdded
 struct PollOptionDeleted
 {
     /// Message containing the poll from which the option was deleted, if known. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): family type 'MaybeInaccessibleMessage' can't be deserialized yet
+    @serdeOptional
+    Nullable!(MaybeInaccessibleMessage) poll_message;
     /// Unique identifier of the deleted option
     string option_persistent_id;
     /// Option text
@@ -1454,6 +1544,7 @@ struct ChatBoostAdded
 alias BackgroundFill = JsonableAlgebraicProxy!(BackgroundFillFreeformGradient, BackgroundFillGradient, BackgroundFillSolid);
 
 /++ The background is filled using the selected color. +/
+@SerdeDiscriminator("type", "solid")
 struct BackgroundFillSolid
 {
     /// Type of the background fill, always “solid”
@@ -1463,6 +1554,7 @@ struct BackgroundFillSolid
 }
 
 /++ The background is a gradient fill. +/
+@SerdeDiscriminator("type", "gradient")
 struct BackgroundFillGradient
 {
     /// Type of the background fill, always “gradient”
@@ -1476,6 +1568,7 @@ struct BackgroundFillGradient
 }
 
 /++ The background is a freeform gradient that rotates after every message in the chat. +/
+@SerdeDiscriminator("type", "freeform_gradient")
 struct BackgroundFillFreeformGradient
 {
     /// Type of the background fill, always “freeform_gradient”
@@ -1487,17 +1580,19 @@ struct BackgroundFillFreeformGradient
 alias BackgroundType = JsonableAlgebraicProxy!(BackgroundTypeChatTheme, BackgroundTypeFill, BackgroundTypePattern, BackgroundTypeWallpaper);
 
 /++ The background is automatically filled based on the selected colors. +/
+@SerdeDiscriminator("type", "fill")
 struct BackgroundTypeFill
 {
     /// Type of the background, always “fill”
     string type;
     /// The background fill
-    // TODO(telega-generator): family type 'BackgroundFill' can't be deserialized yet
+    BackgroundFill fill;
     /// Dimming of the background in dark themes, as a percentage; 0-100
     long dark_theme_dimming;
 }
 
 /++ The background is a wallpaper in the JPEG format. +/
+@SerdeDiscriminator("type", "wallpaper")
 struct BackgroundTypeWallpaper
 {
     /// Type of the background, always “wallpaper”
@@ -1515,6 +1610,7 @@ struct BackgroundTypeWallpaper
 }
 
 /++ The background is a .PNG or .TGV (gzipped subset of SVG with MIME type “application/x-tgwallpattern”) pattern to be combined with the background fill chosen by the user. +/
+@SerdeDiscriminator("type", "pattern")
 struct BackgroundTypePattern
 {
     /// Type of the background, always “pattern”
@@ -1522,7 +1618,7 @@ struct BackgroundTypePattern
     /// Document with the pattern
     Document document;
     /// The background fill that is combined with the pattern
-    // TODO(telega-generator): family type 'BackgroundFill' can't be deserialized yet
+    BackgroundFill fill;
     /// Intensity of the pattern when it is shown above the filled background; 0-100
     long intensity;
     /// True, if the background fill must be applied only to the pattern itself. All other pixels are black in this case. For dark themes only.
@@ -1534,6 +1630,7 @@ struct BackgroundTypePattern
 }
 
 /++ The background is taken directly from a built-in chat theme. +/
+@SerdeDiscriminator("type", "chat_theme")
 struct BackgroundTypeChatTheme
 {
     /// Type of the background, always “chat_theme”
@@ -1546,14 +1643,15 @@ struct BackgroundTypeChatTheme
 struct ChatBackground
 {
     /// Type of the background
-    // TODO(telega-generator): family type 'BackgroundType' can't be deserialized yet
+    BackgroundType type;
 }
 
 /++ Describes a service message about checklist tasks marked as done or not done. +/
 struct ChecklistTasksDone
 {
     /// Message containing the checklist whose tasks were marked as done or not done. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) checklist_message;
     /// Identifiers of the tasks that were marked as done
     @serdeOptional
     Nullable!(long[]) marked_as_done_task_ids;
@@ -1566,15 +1664,23 @@ struct ChecklistTasksDone
 struct ChecklistTasksAdded
 {
     /// Message containing the checklist to which the tasks were added. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) checklist_message;
     /// List of tasks added to the checklist
     ChecklistTask[] tasks;
 }
 
-/++ Describes a service message about a chat being added to a community. +/
+/++ Describes a service message about a chat or a bot being added to a community. +/
 struct CommunityChatAdded
 {
-    /// The new community to which the chat belongs
+    /// The new community to which the chat or the bot belongs
+    Community community;
+}
+
+/++ Describes a service message about a chat being joined by a user from a community. +/
+struct CommunityChatJoined
+{
+    /// The community from which the chat was joined
     Community community;
 }
 
@@ -1730,7 +1836,8 @@ struct DirectMessagePriceChanged
 struct SuggestedPostApproved
 {
     /// Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) suggested_post_message;
     /// Amount paid for the post
     @serdeOptional
     Nullable!(SuggestedPostPrice) price;
@@ -1742,7 +1849,8 @@ struct SuggestedPostApproved
 struct SuggestedPostApprovalFailed
 {
     /// Message containing the suggested post whose approval has failed. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) suggested_post_message;
     /// Expected price of the post
     SuggestedPostPrice price;
 }
@@ -1751,7 +1859,8 @@ struct SuggestedPostApprovalFailed
 struct SuggestedPostDeclined
 {
     /// Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) suggested_post_message;
     /// Comment with which the post was declined
     @serdeOptional
     Nullable!(string) comment;
@@ -1761,7 +1870,8 @@ struct SuggestedPostDeclined
 struct SuggestedPostPaid
 {
     /// Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) suggested_post_message;
     /// Currency in which the payment was made. Currently, one of “XTR” for Telegram Stars or “TON” for TON grams.
     string currency;
     /// The amount of the currency that was received by the channel in nanograms; for payments in TON grams only
@@ -1776,9 +1886,28 @@ struct SuggestedPostPaid
 struct SuggestedPostRefunded
 {
     /// Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) suggested_post_message;
     /// Reason for the refund. Currently, one of “post_deleted” if the post was deleted within 24 hours of being posted or removed from scheduled messages without being posted, or “payment_refunded” if the payer refunded their payment.
     string reason;
+}
+
+struct PaidMessagesWaived
+{
+}
+
+/++ Describes a service message about a transfer with a TON wallet. +/
+struct TonWalletTransfer
+{
+    /// Unique identifier of the transaction; may be empty if the transfer hasn't been sent yet
+    string transaction_id;
+    /// Address of the transfer peer in the TON blockchain
+    string peer_address;
+    /// The amount of transferred cryptocurrency, in the smallest units of the cryptocurrency, as a decimal number; negative for outgoing transfers
+    string amount;
+    /// Comment added to the transfer; omitted if the comment is encrypted
+    @serdeOptional
+    Nullable!(string) comment;
 }
 
 /++ This object represents a service message about the creation of a scheduled giveaway. +/
@@ -1863,7 +1992,8 @@ struct GiveawayCompleted
     @serdeOptional
     Nullable!(long) unclaimed_prize_count;
     /// Message with the giveaway that was completed, if it wasn't deleted
-    // TODO(telega-generator): recursive reference to 'Message' can't be embedded by value
+    @serdeOptional
+    Ref!(Message) giveaway_message;
     /// True, if the giveaway is a Telegram Star giveaway. Otherwise, currently, the giveaway is a Telegram Premium giveaway.
     @serdeOptional
     Nullable!(bool) is_star_giveaway;
@@ -1996,6 +2126,9 @@ struct ReplyKeyboardMarkup
     /// Use this parameter if you want to show the keyboard to specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply to a message in the same chat and forum topic, sender of the original message.Example: A user requests to change the bot's language, bot replies to the request with a keyboard to select the new language. Other users in the group don't see the keyboard.
     @serdeOptional
     Nullable!(bool) selective;
+    /// Pass True if the reply interface must be shown to the user, as if they had manually selected the bot's message and tapped 'Reply'
+    @serdeOptional
+    Nullable!(bool) force_reply;
 }
 
 /++ This object represents one button of the reply keyboard. At most one of the fields other than text, icon_custom_emoji_id, and style must be used to specify the type of the button. For simple text buttons, String can be used instead of this object to specify the button text. +/
@@ -2101,7 +2234,7 @@ struct KeyboardButtonRequestManagedBot
     /// Suggested name for the bot
     @serdeOptional
     Nullable!(string) suggested_name;
-    /// Suggested username for the bot
+    /// Suggested username for the bot. The username must end with “bot”. If the user creating the bot has a Telegram Premium subscription, then the username can also end with “agent”, “ai”, “app”, “game”, or “gay”; in this case, the username will be assigned to the bot as a secondary username, and a regular username ending with “bot” will be assigned to the bot automatically.
     @serdeOptional
     Nullable!(string) suggested_username;
 }
@@ -2129,6 +2262,9 @@ struct InlineKeyboardMarkup
 {
     /// Array of button rows, each represented by an Array of InlineKeyboardButton objects
     InlineKeyboardButton[][] inline_keyboard;
+    /// Pass True if the reply interface must be shown to the user, as if they had manually selected the bot's message and tapped 'Reply'. The value of the field can't be changed when the inline keyboard is edited.
+    @serdeOptional
+    Nullable!(bool) force_reply;
 }
 
 /++ This object represents one button of an inline keyboard. Exactly one of the fields other than text, icon_custom_emoji_id, and style must be used to specify the type of the button. +/
@@ -2148,10 +2284,10 @@ struct InlineKeyboardButton
     /// Data to be sent in a callback query to the bot when the button is pressed, 1-64 bytes
     @serdeOptional
     Nullable!(string) callback_data;
-    /// Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot. Not supported for messages sent on behalf of a business account.
+    /// Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot. Not supported for messages sent on behalf of a business account and ephemeral messages.
     @serdeOptional
     Nullable!(WebAppInfo) web_app;
-    /// An HTTPS URL used to automatically authorize the user. Can be used as a replacement for the Telegram Login Widget.
+    /// An HTTPS URL used to automatically authorize the user. Can be used as a replacement for the Telegram Login Widget. Not supported for ephemeral messages.
     @serdeOptional
     Nullable!(LoginUrl) login_url;
     /// If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. May be empty, in which case just the bot's username will be inserted. Not supported for messages sent in channel direct messages chats and on behalf of a business account.
@@ -2172,14 +2308,15 @@ struct InlineKeyboardButton
     /// Specify True, to send a Pay button. Substrings “” and “XTR” in the buttons's text will be replaced with a Telegram Star icon.NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages.
     @serdeOptional
     Nullable!(bool) pay;
+    /// If set, then the button is disabled and does nothing
+    @serdeOptional
+    Nullable!(DisabledButton) disabled;
 }
 
 /++
-This object represents a parameter of the inline keyboard button used to automatically authorize a user. Serves as a great replacement for the Telegram Login Widget when the user is coming from Telegram. All the user needs to do is tap/click a button and confirm that they want to log in:
+This object represents a parameter of the inline keyboard button used to automatically authorize a user. It serves as a great replacement for the Telegram Login Widget when the user is coming from Telegram. All the user needs to do is tap/click a button and confirm that they want to log in:
 
-Telegram apps support these buttons as of version 5.7.
-
-Sample bot: @discussbot
+Sample bot: @DiscussBot
 +/
 struct LoginUrl
 {
@@ -2188,7 +2325,7 @@ struct LoginUrl
     /// New text of the button in forwarded messages
     @serdeOptional
     Nullable!(string) forward_text;
-    /// Username of a bot, which will be used for user authorization. See Setting up a bot for more details. If not specified, the current bot's username will be assumed. The url's domain must be the same as the domain linked with the bot. See Linking your domain to the bot for more details.
+    /// Username of a bot, which will be used for user authorization; not supported in RichMessageButton. See Setting up a bot for more details. If not specified, the current bot's username will be assumed. The url's domain must be the same as the domain linked with the bot. See Linking your domain to the bot for more details.
     @serdeOptional
     Nullable!(string) bot_username;
     /// Pass True to request the permission for your bot to send messages to the user
@@ -2223,6 +2360,10 @@ struct CopyTextButton
     string text;
 }
 
+struct DisabledButton
+{
+}
+
 /++
 This object represents an incoming callback query from a callback button in an inline keyboard. If the button that originated the query was attached to a message sent by the bot, the field message will be present. If the button was attached to a message sent via the bot (in inline mode), the field inline_message_id will be present. Exactly one of the fields data or game_short_name will be present.
 
@@ -2235,7 +2376,8 @@ struct CallbackQuery
     /// Sender
     User from;
     /// Message sent by the bot with the callback button that originated the query
-    // TODO(telega-generator): family type 'MaybeInaccessibleMessage' can't be deserialized yet
+    @serdeOptional
+    Nullable!(MaybeInaccessibleMessage) message;
     /// Identifier of the message sent via the bot in inline mode, that originated the query
     @serdeOptional
     Nullable!(string) inline_message_id;
@@ -2249,6 +2391,103 @@ struct CallbackQuery
     Nullable!(string) game_short_name;
 }
 
+alias WidgetQueryType = JsonableAlgebraicProxy!(WidgetQueryTypeData, WidgetQueryTypeSentTransaction, WidgetQueryTypeSignData);
+
+/++ The query contains data for the bot. +/
+@SerdeDiscriminator("type", "data")
+struct WidgetQueryTypeData
+{
+    /// Type of the query, always “data”
+    string type;
+    /// TON wallet card of the user who sent the query, if it was sent to the bot along with the query
+    @serdeOptional
+    Nullable!(TonWalletCard) wallet_card;
+}
+
+/++ The query contains data signed by a TON wallet of the user who sent the query. The data is signed for the domain bot<bot_id>, where <bot_id> is the identifier of the bot. +/
+@SerdeDiscriminator("type", "sign_data")
+struct WidgetQueryTypeSignData
+{
+    /// Type of the query, always “sign_data”
+    string type;
+    /// The wallet that signed the data
+    WidgetQueryWallet wallet;
+    /// JSON-serialized signed data
+    string sign_data;
+}
+
+/++ The query notifies the bot about a transaction sent from a TON wallet of the user who sent the query. +/
+@SerdeDiscriminator("type", "sent_transaction")
+struct WidgetQueryTypeSentTransaction
+{
+    /// Type of the query, always “sent_transaction”
+    string type;
+    /// The wallet from which the transaction was sent
+    WidgetQueryWallet wallet;
+    /// Value of msg_hash of the transaction
+    string msg_hash;
+}
+
+/++ This object describes a TON wallet of the user, which is used in a query from a widget. +/
+struct WidgetQueryWallet
+{
+    /// Address of the wallet
+    string address;
+    /// Balance of the wallet, in the smallest units of the cryptocurrency, as a decimal number
+    string amount;
+    /// Hex-encoded public key of the wallet; omitted if unknown
+    @serdeOptional
+    Nullable!(string) public_key;
+    /// Base64-encoded serialized StateInit of the wallet contract; omitted if and only if public_key is omitted
+    @serdeOptional
+    Nullable!(string) state_init;
+}
+
+/++ This object represents an incoming query from a widget in a message sent by the bot or via the bot. Use answerWidgetQuery to answer the query. Each user can send at most 5 queries per 5 seconds to the bot from all its widgets. +/
+struct WidgetQuery
+{
+    /// Unique identifier for this query
+    string id;
+    /// Sender
+    User from;
+    /// Chat with the message containing the widget; omitted if the widget is in an inline message
+    @serdeOptional
+    Nullable!(Chat) chat;
+    /// Identifier of the message containing the widget; omitted if the widget is in an inline message
+    @serdeOptional
+    Nullable!(long) message_id;
+    /// Identifier of the inline message containing the widget
+    @serdeOptional
+    Nullable!(string) inline_message_id;
+    /// Global identifier, uniquely corresponding to the chat to which the message with the widget was sent
+    string chat_instance;
+    /// For widgets in inline messages, type of the chat to which the message was sent. Can be either “sender” for a private chat with the inline query sender, “private”, “group”, “supergroup”, or “channel”.
+    @serdeOptional
+    Nullable!(string) chat_type;
+    /// Type of the query
+    WidgetQueryType type;
+    /// Data of the query, 1-64 bytes
+    string data;
+    /// Unique identifier of the shared widget, which sent the query; omitted if the widget isn't shared
+    @serdeOptional
+    Nullable!(string) widget_id;
+}
+
+/++ This object represents an incoming query from a forwarded message with a shared widget created by the bot. Use answerWidgetQuery to answer the query. Each user can send at most 5 queries per 5 seconds to the bot from all its widgets. +/
+struct SharedWidgetQuery
+{
+    /// Unique identifier for this query
+    string id;
+    /// Sender
+    User from;
+    /// Type of the query
+    WidgetQueryType type;
+    /// Data of the query, 1-64 bytes
+    string data;
+    /// Unique identifier of the shared widget, which sent the query
+    string widget_id;
+}
+
 /++
 Upon receiving a message with this object, Telegram clients will display a reply interface to the user (act as if the user has selected the bot's message and tapped 'Reply'). This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to sacrifice privacy mode. Not supported in channels and for messages sent on behalf of a user account.
 
@@ -2256,7 +2495,7 @@ Example: A poll bot for groups runs in privacy mode (only receives commands, rep
 +/
 struct ForceReply
 {
-    /// Shows reply interface to the user, as if they manually selected the bot's message and tapped 'Reply'
+    /// Shows reply interface to the user, as if they had manually selected the bot's message and tapped 'Reply'
     bool force_reply;
     /// The placeholder to be shown in the input field when the reply is active; 1-64 characters
     @serdeOptional
@@ -2361,9 +2600,11 @@ struct ChatAdministratorRights
     /// True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
     @serdeOptional
     Nullable!(bool) can_manage_direct_messages;
-    /// True, if the administrator can edit the tags of regular members; for groups and supergroups only. If omitted, defaults to the value of can_pin_messages.
+    /// True, if the administrator can edit the tags of regular members; for groups and supergroups only
     @serdeOptional
     Nullable!(bool) can_manage_tags;
+    /// True, if the administrator can manage chat welcome messages or directly send them in the case of bots
+    bool can_send_welcome_messages;
 }
 
 /++ This object represents changes in the status of a chat member. +/
@@ -2376,9 +2617,9 @@ struct ChatMemberUpdated
     /// Date the change was done in Unix time
     long date;
     /// Previous information about the chat member
-    // TODO(telega-generator): family type 'ChatMember' can't be deserialized yet
+    ChatMember old_chat_member;
     /// New information about the chat member
-    // TODO(telega-generator): family type 'ChatMember' can't be deserialized yet
+    ChatMember new_chat_member;
     /// Chat invite link, which was used by the user to join the chat; for joining by invite link events only
     @serdeOptional
     Nullable!(ChatInviteLink) invite_link;
@@ -2393,6 +2634,7 @@ struct ChatMemberUpdated
 alias ChatMember = JsonableAlgebraicProxy!(ChatMemberAdministrator, ChatMemberBanned, ChatMemberLeft, ChatMemberMember, ChatMemberOwner, ChatMemberRestricted);
 
 /++ Represents a chat member that owns the chat and has all administrator privileges. +/
+@SerdeDiscriminator("status", "creator")
 struct ChatMemberOwner
 {
     /// The member's status in the chat, always “creator”
@@ -2407,6 +2649,7 @@ struct ChatMemberOwner
 }
 
 /++ Represents a chat member that has some additional privileges. +/
+@SerdeDiscriminator("status", "administrator")
 struct ChatMemberAdministrator
 {
     /// The member's status in the chat, always “administrator”
@@ -2452,15 +2695,18 @@ struct ChatMemberAdministrator
     /// True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
     @serdeOptional
     Nullable!(bool) can_manage_direct_messages;
-    /// True, if the administrator can edit the tags of regular members; for groups and supergroups only. If omitted, defaults to the value of can_pin_messages.
+    /// True, if the administrator can edit the tags of regular members; for groups and supergroups only
     @serdeOptional
     Nullable!(bool) can_manage_tags;
+    /// True, if the administrator can manage chat welcome messages or directly send them in the case of bots
+    bool can_send_welcome_messages;
     /// Custom title for this user
     @serdeOptional
     Nullable!(string) custom_title;
 }
 
 /++ Represents a chat member that has no additional privileges or restrictions. +/
+@SerdeDiscriminator("status", "member")
 struct ChatMemberMember
 {
     /// The member's status in the chat, always “member”
@@ -2476,6 +2722,7 @@ struct ChatMemberMember
 }
 
 /++ Represents a chat member that is under certain restrictions in the chat. Supergroups only. +/
+@SerdeDiscriminator("status", "restricted")
 struct ChatMemberRestricted
 {
     /// The member's status in the chat, always “restricted”
@@ -2503,7 +2750,7 @@ struct ChatMemberRestricted
     bool can_send_voice_notes;
     /// True, if the user is allowed to send polls and checklists
     bool can_send_polls;
-    /// True, if the user is allowed to send animations, games, stickers and use inline bots
+    /// True, if the user is allowed to send animations, games, stickers, widgets and use inline bots
     bool can_send_other_messages;
     /// True, if the user is allowed to add web page previews to their messages
     bool can_add_web_page_previews;
@@ -2524,6 +2771,7 @@ struct ChatMemberRestricted
 }
 
 /++ Represents a chat member that isn't currently a member of the chat, but may join it themselves. +/
+@SerdeDiscriminator("status", "left")
 struct ChatMemberLeft
 {
     /// The member's status in the chat, always “left”
@@ -2533,6 +2781,7 @@ struct ChatMemberLeft
 }
 
 /++ Represents a chat member that was banned in the chat and can't return to the chat or view chat messages. +/
+@SerdeDiscriminator("status", "kicked")
 struct ChatMemberBanned
 {
     /// The member's status in the chat, always “kicked”
@@ -2592,7 +2841,7 @@ struct ChatPermissions
     /// True, if the user is allowed to send polls and checklists
     @serdeOptional
     Nullable!(bool) can_send_polls;
-    /// True, if the user is allowed to send animations, games, stickers and use inline bots
+    /// True, if the user is allowed to send animations, games, stickers, widgets and use inline bots
     @serdeOptional
     Nullable!(bool) can_send_other_messages;
     /// True, if the user is allowed to add web page previews to their messages
@@ -2686,21 +2935,140 @@ struct UserRating
     Nullable!(long) next_level_rating;
 }
 
-/++ Describes the position of a clickable area within a story. +/
-struct StoryAreaPosition
+/++ Describes the position of a rectangle area on a story media or a TON wallet card. +/
+struct AreaPosition
 {
-    /// The abscissa of the area's center, as a percentage of the media width
+    /// The abscissa of the area's center, as a percentage of the media or the card width
     double x_percentage;
-    /// The ordinate of the area's center, as a percentage of the media height
+    /// The ordinate of the area's center, as a percentage of the media or the card height
     double y_percentage;
-    /// The width of the area's rectangle, as a percentage of the media width
+    /// The width of the area's rectangle, as a percentage of the media or the card width
     double width_percentage;
-    /// The height of the area's rectangle, as a percentage of the media height
+    /// The height of the area's rectangle, as a percentage of the media or the card height
     double height_percentage;
     /// The clockwise rotation angle of the rectangle, in degrees; 0-360
     double rotation_angle;
-    /// The radius of the rectangle corner rounding, as a percentage of the media width
+    /// The radius of the rectangle corner rounding, as a percentage of the media or the card width
     double corner_radius_percentage;
+}
+
+/++ This object represents an NFT in the TON blockchain. +/
+struct TonNft
+{
+    /// Address of the NFT
+    string address;
+    /// Address of the collection to which the NFT belongs; omitted if unknown
+    @serdeOptional
+    Nullable!(string) collection_address;
+    /// Index of the NFT among all NFTs from the collection as a decimal number
+    string index;
+    /// Name of the NFT
+    string name;
+    /// Description of the NFT
+    string description;
+    /// Attributes of the NFT
+    @serdeOptional
+    Nullable!(TonNftAttribute[]) attributes;
+    /// The unique gift corresponding to the NFT
+    @serdeOptional
+    Nullable!(UniqueGift) gift;
+}
+
+/++ This object represents an attribute of an NFT in the TON blockchain. +/
+struct TonNftAttribute
+{
+    /// Trait type of the attribute
+    string trait_type;
+    /// Value of the attribute
+    string value;
+}
+
+/++ This object describes a sticker on a TON wallet card. +/
+struct TonWalletCardSticker
+{
+    /// Position of the sticker on the card
+    AreaPosition position;
+    /// The NFT shown as the sticker
+    TonNft nft;
+}
+
+/++ This object describes a TON wallet card, which is shown on the profile page of a user to everyone. +/
+struct TonWalletCard
+{
+    /// Address of the wallet
+    string address;
+    /// Balance of the wallet, in the smallest units of the cryptocurrency, as a decimal number
+    string amount;
+    /// Stickers placed on the card
+    TonWalletCardSticker[] stickers;
+    /// Address of the NFT of one of the stickers, whose colors must be used for the card background; omitted if the default background must be used
+    @serdeOptional
+    Nullable!(string) background_nft_address;
+}
+
+alias EmojiType = JsonableAlgebraicProxy!(EmojiTypeCustomEmoji, EmojiTypeEmoji);
+
+/++ A regular emoji. +/
+@SerdeDiscriminator("type", "emoji")
+struct EmojiTypeEmoji
+{
+    /// Type of the emoji, always “emoji”
+    string type;
+    /// The emoji
+    string emoji;
+}
+
+/++ A custom emoji. +/
+@SerdeDiscriminator("type", "custom_emoji")
+struct EmojiTypeCustomEmoji
+{
+    /// Type of the emoji, always “custom_emoji”
+    string type;
+    /// Identifier of the custom emoji. Use getCustomEmojiStickers to get full information about the sticker.
+    string custom_emoji_id;
+}
+
+alias ChatShareTheme = JsonableAlgebraicProxy!(ChatShareThemeEmoji, ChatShareThemeUniqueGift);
+
+/++ The theme with emoji placed on a background. +/
+@SerdeDiscriminator("type", "emoji")
+struct ChatShareThemeEmoji
+{
+    /// Type of the theme, always “emoji”
+    string type;
+    /// The emoji; 0-6 regular or custom emoji
+    EmojiType[] emojis;
+    /// Identifier of the backdrop used as the background; omitted if the default background is used. Use getChatShareThemeBackdrops to get details about the backdrop.
+    @serdeOptional
+    Nullable!(long) background_backdrop_id;
+}
+
+/++ The theme based on a unique gift owned by the user or the chat. +/
+@SerdeDiscriminator("type", "unique_gift")
+struct ChatShareThemeUniqueGift
+{
+    /// Type of the theme, always “unique_gift”
+    string type;
+    /// The gift
+    UniqueGift gift;
+}
+
+/++ This object contains a list of backdrops, which can be used as the background of a theme of the screen for sharing a link to a user or a chat. +/
+struct ChatShareThemeBackdrops
+{
+    /// The list of backdrops
+    ChatShareThemeBackdrop[] backdrops;
+}
+
+/++ This object describes a backdrop, which can be used as the background of a theme of the screen for sharing a link to a user or a chat. +/
+struct ChatShareThemeBackdrop
+{
+    /// Unique identifier of the backdrop
+    long id;
+    /// Name of the backdrop
+    string name;
+    /// Colors of the backdrop
+    UniqueGiftBackdropColors colors;
 }
 
 /++ Describes the physical address of a location. +/
@@ -2722,6 +3090,7 @@ struct LocationAddress
 alias StoryAreaType = JsonableAlgebraicProxy!(StoryAreaTypeLink, StoryAreaTypeLocation, StoryAreaTypeSuggestedReaction, StoryAreaTypeUniqueGift, StoryAreaTypeWeather);
 
 /++ Describes a story area pointing to a location. Currently, a story can have up to 10 location areas. +/
+@SerdeDiscriminator("type", "location")
 struct StoryAreaTypeLocation
 {
     /// Type of the area, always “location”
@@ -2736,12 +3105,13 @@ struct StoryAreaTypeLocation
 }
 
 /++ Describes a story area pointing to a suggested reaction. Currently, a story can have up to 5 suggested reaction areas. +/
+@SerdeDiscriminator("type", "suggested_reaction")
 struct StoryAreaTypeSuggestedReaction
 {
     /// Type of the area, always “suggested_reaction”
     string type;
     /// Type of the reaction
-    // TODO(telega-generator): family type 'ReactionType' can't be deserialized yet
+    ReactionType reaction_type;
     /// Pass True if the reaction area has a dark background
     @serdeOptional
     Nullable!(bool) is_dark;
@@ -2751,6 +3121,7 @@ struct StoryAreaTypeSuggestedReaction
 }
 
 /++ Describes a story area pointing to an HTTP or tg:// link. Currently, a story can have up to 3 link areas. +/
+@SerdeDiscriminator("type", "link")
 struct StoryAreaTypeLink
 {
     /// Type of the area, always “link”
@@ -2760,6 +3131,7 @@ struct StoryAreaTypeLink
 }
 
 /++ Describes a story area containing weather information. Currently, a story can have up to 3 weather areas. +/
+@SerdeDiscriminator("type", "weather")
 struct StoryAreaTypeWeather
 {
     /// Type of the area, always “weather”
@@ -2773,6 +3145,7 @@ struct StoryAreaTypeWeather
 }
 
 /++ Describes a story area pointing to a unique gift. Currently, a story can have at most 1 unique gift area. +/
+@SerdeDiscriminator("type", "unique_gift")
 struct StoryAreaTypeUniqueGift
 {
     /// Type of the area, always “unique_gift”
@@ -2785,9 +3158,9 @@ struct StoryAreaTypeUniqueGift
 struct StoryArea
 {
     /// Position of the area
-    StoryAreaPosition position;
+    AreaPosition position;
     /// Type of the area
-    // TODO(telega-generator): family type 'StoryAreaType' can't be deserialized yet
+    StoryAreaType type;
 }
 
 /++ Represents a location to which a chat is connected. +/
@@ -2802,6 +3175,7 @@ struct ChatLocation
 alias ReactionType = JsonableAlgebraicProxy!(ReactionTypeCustomEmoji, ReactionTypeEmoji, ReactionTypePaid);
 
 /++ The reaction is based on an emoji. +/
+@SerdeDiscriminator("type", "emoji")
 struct ReactionTypeEmoji
 {
     /// Type of the reaction, always “emoji”
@@ -2811,6 +3185,7 @@ struct ReactionTypeEmoji
 }
 
 /++ The reaction is based on a custom emoji. +/
+@SerdeDiscriminator("type", "custom_emoji")
 struct ReactionTypeCustomEmoji
 {
     /// Type of the reaction, always “custom_emoji”
@@ -2820,6 +3195,7 @@ struct ReactionTypeCustomEmoji
 }
 
 /++ The reaction is paid. +/
+@SerdeDiscriminator("type", "paid")
 struct ReactionTypePaid
 {
     /// Type of the reaction, always “paid”
@@ -2830,7 +3206,7 @@ struct ReactionTypePaid
 struct ReactionCount
 {
     /// Type of the reaction
-    // TODO(telega-generator): family type 'ReactionType' can't be deserialized yet
+    ReactionType type;
     /// Number of times the reaction was added
     long total_count;
 }
@@ -2851,9 +3227,9 @@ struct MessageReactionUpdated
     /// Date of the change in Unix time
     long date;
     /// Previous list of reaction types that were set by the user
-    // TODO(telega-generator): family type 'ReactionType[]' can't be deserialized yet
+    ReactionType[] old_reaction;
     /// New list of reaction types that have been set by the user
-    // TODO(telega-generator): family type 'ReactionType[]' can't be deserialized yet
+    ReactionType[] new_reaction;
 }
 
 /++ This object represents reaction changes on a message with anonymous reactions. +/
@@ -3086,6 +3462,15 @@ struct UniqueGiftInfo
     UniqueGift gift;
     /// Origin of the gift. Currently, either “upgrade” for gifts upgraded from regular gifts, “transfer” for gifts transferred from other users or channels, “resale” for gifts bought from other users, “gifted_upgrade” for upgrades purchased after the gift was sent, or “offer” for gifts bought or sold through gift purchase offers.
     string origin;
+    /// Text of the message that was added to the gift
+    @serdeOptional
+    Nullable!(string) text;
+    /// Special entities that appear in the text
+    @serdeOptional
+    Nullable!(MessageEntity[]) entities;
+    /// True, if the sender and gift text are shown only to the gift receiver; otherwise, everyone will be able to see them
+    @serdeOptional
+    Nullable!(bool) is_private;
     /// For gifts bought from other users, the currency in which the payment for the gift was done. Currently, one of “XTR” for Telegram Stars or “TON” for TON grams.
     @serdeOptional
     Nullable!(string) last_resale_currency;
@@ -3106,6 +3491,7 @@ struct UniqueGiftInfo
 alias OwnedGift = JsonableAlgebraicProxy!(OwnedGiftRegular, OwnedGiftUnique);
 
 /++ Describes a regular gift owned by a user or a chat. +/
+@SerdeDiscriminator("type", "regular")
 struct OwnedGiftRegular
 {
     /// Type of the gift, always “regular”
@@ -3153,6 +3539,7 @@ struct OwnedGiftRegular
 }
 
 /++ Describes a unique gift received and owned by a user or a chat. +/
+@SerdeDiscriminator("type", "unique")
 struct OwnedGiftUnique
 {
     /// Type of the gift, always “unique”
@@ -3187,7 +3574,7 @@ struct OwnedGifts
     /// The total number of gifts owned by the user or the chat
     long total_count;
     /// The list of gifts
-    // TODO(telega-generator): family type 'OwnedGift[]' can't be deserialized yet
+    OwnedGift[] gifts;
     /// Offset for the next request. If empty, then there are no more results.
     @serdeOptional
     Nullable!(string) next_offset;
@@ -3243,6 +3630,7 @@ struct BotCommand
 alias BotCommandScope = JsonableAlgebraicProxy!(BotCommandScopeAllChatAdministrators, BotCommandScopeAllGroupChats, BotCommandScopeAllPrivateChats, BotCommandScopeChat, BotCommandScopeChatAdministrators, BotCommandScopeChatMember, BotCommandScopeDefault);
 
 /++ Represents the default scope of bot commands. Default commands are used if no commands with a narrower scope are specified for the user. +/
+@SerdeDiscriminator("type", "default")
 struct BotCommandScopeDefault
 {
     /// Scope type, must be default
@@ -3250,6 +3638,7 @@ struct BotCommandScopeDefault
 }
 
 /++ Represents the scope of bot commands, covering all private chats. +/
+@SerdeDiscriminator("type", "all_private_chats")
 struct BotCommandScopeAllPrivateChats
 {
     /// Scope type, must be all_private_chats
@@ -3257,6 +3646,7 @@ struct BotCommandScopeAllPrivateChats
 }
 
 /++ Represents the scope of bot commands, covering all group and supergroup chats. +/
+@SerdeDiscriminator("type", "all_group_chats")
 struct BotCommandScopeAllGroupChats
 {
     /// Scope type, must be all_group_chats
@@ -3264,6 +3654,7 @@ struct BotCommandScopeAllGroupChats
 }
 
 /++ Represents the scope of bot commands, covering all group and supergroup chat administrators. +/
+@SerdeDiscriminator("type", "all_chat_administrators")
 struct BotCommandScopeAllChatAdministrators
 {
     /// Scope type, must be all_chat_administrators
@@ -3271,6 +3662,7 @@ struct BotCommandScopeAllChatAdministrators
 }
 
 /++ Represents the scope of bot commands, covering a specific chat. +/
+@SerdeDiscriminator("type", "chat")
 struct BotCommandScopeChat
 {
     /// Scope type, must be chat
@@ -3280,6 +3672,7 @@ struct BotCommandScopeChat
 }
 
 /++ Represents the scope of bot commands, covering all administrators of a specific group or supergroup chat. +/
+@SerdeDiscriminator("type", "chat_administrators")
 struct BotCommandScopeChatAdministrators
 {
     /// Scope type, must be chat_administrators
@@ -3289,6 +3682,7 @@ struct BotCommandScopeChatAdministrators
 }
 
 /++ Represents the scope of bot commands, covering a specific member of a group or supergroup chat. +/
+@SerdeDiscriminator("type", "chat_member")
 struct BotCommandScopeChatMember
 {
     /// Scope type, must be chat_member
@@ -3323,6 +3717,7 @@ struct BotShortDescription
 alias MenuButton = JsonableAlgebraicProxy!(MenuButtonCommands, MenuButtonDefault, MenuButtonWebApp);
 
 /++ Represents a menu button, which opens the bot's list of commands. +/
+@SerdeDiscriminator("type", "commands")
 struct MenuButtonCommands
 {
     /// Type of the button, must be commands
@@ -3330,6 +3725,7 @@ struct MenuButtonCommands
 }
 
 /++ Represents a menu button, which launches a Web App. +/
+@SerdeDiscriminator("type", "web_app")
 struct MenuButtonWebApp
 {
     /// Type of the button, must be web_app
@@ -3341,6 +3737,7 @@ struct MenuButtonWebApp
 }
 
 /++ Describes that no specific value for the menu button was set. +/
+@SerdeDiscriminator("type", "default")
 struct MenuButtonDefault
 {
     /// Type of the button, must be default
@@ -3350,6 +3747,7 @@ struct MenuButtonDefault
 alias ChatBoostSource = JsonableAlgebraicProxy!(ChatBoostSourceGiftCode, ChatBoostSourceGiveaway, ChatBoostSourcePremium);
 
 /++ The boost was obtained by subscribing to Telegram Premium or by gifting a Telegram Premium subscription to another user. +/
+@SerdeDiscriminator("source", "premium")
 struct ChatBoostSourcePremium
 {
     /// Source of the boost, always “premium”
@@ -3359,6 +3757,7 @@ struct ChatBoostSourcePremium
 }
 
 /++ The boost was obtained by the creation of Telegram Premium gift codes to boost a chat. Each such code boosts the chat 4 times for the duration of the corresponding Telegram Premium subscription. +/
+@SerdeDiscriminator("source", "gift_code")
 struct ChatBoostSourceGiftCode
 {
     /// Source of the boost, always “gift_code”
@@ -3368,6 +3767,7 @@ struct ChatBoostSourceGiftCode
 }
 
 /++ The boost was obtained by the creation of a Telegram Premium or a Telegram Star giveaway. This boosts the chat 4 times for the duration of the corresponding Telegram Premium subscription for Telegram Premium giveaways and prize_star_count / 500 times for one year for Telegram Star giveaways. +/
+@SerdeDiscriminator("source", "giveaway")
 struct ChatBoostSourceGiveaway
 {
     /// Source of the boost, always “giveaway”
@@ -3395,7 +3795,7 @@ struct ChatBoost
     /// Point in time (Unix timestamp) when the boost will automatically expire, unless the booster's Telegram Premium subscription is prolonged
     long expiration_date;
     /// Source of the added boost
-    // TODO(telega-generator): family type 'ChatBoostSource' can't be deserialized yet
+    ChatBoostSource source;
 }
 
 /++ This object represents a boost added to a chat or changed. +/
@@ -3417,7 +3817,7 @@ struct ChatBoostRemoved
     /// Point in time (Unix timestamp) when the boost was removed
     long remove_date;
     /// Source of the removed boost
-    // TODO(telega-generator): family type 'ChatBoostSource' can't be deserialized yet
+    ChatBoostSource source;
 }
 
 /++ Describes a service message about the chat owner leaving the chat. +/
@@ -3563,6 +3963,7 @@ struct ResponseParameters
 alias InputMedia = JsonableAlgebraicProxy!(InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaPhoto, InputMediaVideo);
 
 /++ Represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent. +/
+@SerdeDiscriminator("type", "animation")
 struct InputMediaAnimation
 {
     /// Type of the media, must be animation
@@ -3599,6 +4000,7 @@ struct InputMediaAnimation
 }
 
 /++ Represents an audio file to be treated as music to be sent. +/
+@SerdeDiscriminator("type", "audio")
 struct InputMediaAudio
 {
     /// Type of the media, must be audio
@@ -3629,6 +4031,7 @@ struct InputMediaAudio
 }
 
 /++ Represents a general file to be sent. +/
+@SerdeDiscriminator("type", "document")
 struct InputMediaDocument
 {
     /// Type of the media, must be document
@@ -3653,6 +4056,7 @@ struct InputMediaDocument
 }
 
 /++ Represents an HTTP link to be sent. +/
+@SerdeDiscriminator("type", "link")
 struct InputMediaLink
 {
     /// Type of the media, must be link
@@ -3662,6 +4066,7 @@ struct InputMediaLink
 }
 
 /++ Represents a live photo to be sent. +/
+@SerdeDiscriminator("type", "live_photo")
 struct InputMediaLivePhoto
 {
     /// Type of the media, must be live_photo
@@ -3688,6 +4093,7 @@ struct InputMediaLivePhoto
 }
 
 /++ Represents a location to be sent. +/
+@SerdeDiscriminator("type", "location")
 struct InputMediaLocation
 {
     /// Type of the media, must be location
@@ -3702,6 +4108,7 @@ struct InputMediaLocation
 }
 
 /++ Represents a photo to be sent. +/
+@SerdeDiscriminator("type", "photo")
 struct InputMediaPhoto
 {
     /// Type of the media, must be photo
@@ -3726,6 +4133,7 @@ struct InputMediaPhoto
 }
 
 /++ Represents a sticker file to be sent. +/
+@SerdeDiscriminator("type", "sticker")
 struct InputMediaSticker
 {
     /// Type of the media, must be sticker
@@ -3738,6 +4146,7 @@ struct InputMediaSticker
 }
 
 /++ Represents a venue to be sent. +/
+@SerdeDiscriminator("type", "venue")
 struct InputMediaVenue
 {
     /// Type of the media, must be venue
@@ -3765,6 +4174,7 @@ struct InputMediaVenue
 }
 
 /++ Represents a video to be sent. +/
+@SerdeDiscriminator("type", "video")
 struct InputMediaVideo
 {
     /// Type of the media, must be video
@@ -3810,6 +4220,7 @@ struct InputMediaVideo
 }
 
 /++ Represents a voice message file to be sent. +/
+@SerdeDiscriminator("type", "voice_note")
 struct InputMediaVoiceNote
 {
     /// Type of the media, must be voice_note
@@ -3833,6 +4244,7 @@ struct InputMediaVoiceNote
 alias InputPaidMedia = JsonableAlgebraicProxy!(InputPaidMediaLivePhoto, InputPaidMediaPhoto, InputPaidMediaVideo);
 
 /++ The paid media to send is a live photo. +/
+@SerdeDiscriminator("type", "live_photo")
 struct InputPaidMediaLivePhoto
 {
     /// Type of the media, must be live_photo
@@ -3844,6 +4256,7 @@ struct InputPaidMediaLivePhoto
 }
 
 /++ The paid media to send is a photo. +/
+@SerdeDiscriminator("type", "photo")
 struct InputPaidMediaPhoto
 {
     /// Type of the media, must be photo
@@ -3853,6 +4266,7 @@ struct InputPaidMediaPhoto
 }
 
 /++ The paid media to send is a video. +/
+@SerdeDiscriminator("type", "video")
 struct InputPaidMediaVideo
 {
     /// Type of the media, must be video
@@ -3885,6 +4299,7 @@ struct InputPaidMediaVideo
 alias InputProfilePhoto = JsonableAlgebraicProxy!(InputProfilePhotoAnimated, InputProfilePhotoStatic);
 
 /++ A static profile photo in the .JPG format. +/
+@SerdeDiscriminator("type", "static")
 struct InputProfilePhotoStatic
 {
     /// Type of the profile photo, must be static
@@ -3894,6 +4309,7 @@ struct InputProfilePhotoStatic
 }
 
 /++ An animated profile photo in the MPEG4 format. +/
+@SerdeDiscriminator("type", "animated")
 struct InputProfilePhotoAnimated
 {
     /// Type of the profile photo, must be animated
@@ -3908,6 +4324,7 @@ struct InputProfilePhotoAnimated
 alias InputStoryContent = JsonableAlgebraicProxy!(InputStoryContentPhoto, InputStoryContentVideo);
 
 /++ Describes a photo to post as a story. +/
+@SerdeDiscriminator("type", "photo")
 struct InputStoryContentPhoto
 {
     /// Type of the content, must be photo
@@ -3917,6 +4334,7 @@ struct InputStoryContentPhoto
 }
 
 /++ Describes a video to post as a story. +/
+@SerdeDiscriminator("type", "video")
 struct InputStoryContentVideo
 {
     /// Type of the content, must be video
@@ -3959,20 +4377,18 @@ struct SendMessageMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Text of the message to be sent, 1-4096 characters after entities parsing
     string text;
     /// Mode for parsing entities in the message text. See formatting options for more details.
@@ -4017,7 +4433,7 @@ Message sendMessage(BotApi api, SendMessageMethod method)
 struct ForwardMessageMethod
 {
     mixin TelegramMethod!"/forwardMessage";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -4025,7 +4441,7 @@ struct ForwardMessageMethod
     /// Identifier of the direct messages topic to which the message will be forwarded; required if the message is forwarded to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// Unique identifier for the chat where the original message was sent (or username of the target bot, supergroup or channel in the format @username)
+    /// Unique identifier for the chat where the original message was sent (or username of the target bot, supergroup, or channel in the format @username)
     ChatId from_chat_id;
     /// New start timestamp for the forwarded video in the message
     @serdeOptional
@@ -4056,7 +4472,7 @@ Message forwardMessage(BotApi api, ForwardMessageMethod method)
 struct ForwardMessagesMethod
 {
     mixin TelegramMethod!"/forwardMessages";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -4064,7 +4480,7 @@ struct ForwardMessagesMethod
     /// Identifier of the direct messages topic to which the messages will be forwarded; required if the messages are forwarded to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// Unique identifier for the chat where the original messages were sent (or username of the target bot, supergroup or channel in the format @username)
+    /// Unique identifier for the chat where the original messages were sent (or username of the target bot, supergroup, or channel in the format @username)
     ChatId from_chat_id;
     /// A JSON-serialized list of 1-100 identifiers of messages in the chat from_chat_id to forward. The identifiers must be specified in a strictly increasing order.
     long[] message_ids;
@@ -4082,11 +4498,11 @@ MessageId[] forwardMessages(BotApi api, ForwardMessagesMethod method)
     return api.callMethod!(MessageId[])(method);
 }
 
-/++ Use this method to copy messages of any kind. Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_ids is known to the bot. The method is analogous to the method forwardMessage, but the copied message doesn't have a link to the original message. Returns the MessageId of the sent message on success. +/
+/++ Use this method to copy messages of any kind. Service messages, paid media messages, giveaway messages, giveaway winners messages, invoice messages, and widget messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_ids is known to the bot. The method is analogous to the method forwardMessage, but the copied message doesn't have a link to the original message. Returns the MessageId of the sent message on success. +/
 struct CopyMessageMethod
 {
     mixin TelegramMethod!"/copyMessage";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -4094,7 +4510,7 @@ struct CopyMessageMethod
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// Unique identifier for the chat where the original message was sent (or username of the target bot, supergroup or channel in the format @username)
+    /// Unique identifier for the chat where the original message was sent (or username of the target bot, supergroup, or channel in the format @username)
     ChatId from_chat_id;
     /// Message identifier in the chat specified in from_chat_id
     long message_id;
@@ -4136,17 +4552,17 @@ struct CopyMessageMethod
     Nullable!(ReplyMarkup) reply_markup;
 }
 
-/++ Use this method to copy messages of any kind. Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_ids is known to the bot. The method is analogous to the method forwardMessage, but the copied message doesn't have a link to the original message. Returns the MessageId of the sent message on success. +/
+/++ Use this method to copy messages of any kind. Service messages, paid media messages, giveaway messages, giveaway winners messages, invoice messages, and widget messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_ids is known to the bot. The method is analogous to the method forwardMessage, but the copied message doesn't have a link to the original message. Returns the MessageId of the sent message on success. +/
 MessageId copyMessage(BotApi api, CopyMessageMethod method)
 {
     return api.callMethod!(MessageId)(method);
 }
 
-/++ Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_ids is known to the bot. The method is analogous to the method forwardMessages, but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an Array of MessageId of the sent messages is returned. +/
+/++ Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages, invoice messages, and widget messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_ids is known to the bot. The method is analogous to the method forwardMessages, but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an Array of MessageId of the sent messages is returned. +/
 struct CopyMessagesMethod
 {
     mixin TelegramMethod!"/copyMessages";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -4154,7 +4570,7 @@ struct CopyMessagesMethod
     /// Identifier of the direct messages topic to which the messages will be sent; required if the messages are sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// Unique identifier for the chat where the original messages were sent (or username of the target bot, supergroup or channel in the format @username)
+    /// Unique identifier for the chat where the original messages were sent (or username of the target bot, supergroup, or channel in the format @username)
     ChatId from_chat_id;
     /// A JSON-serialized list of 1-100 identifiers of messages in the chat from_chat_id to copy. The identifiers must be specified in a strictly increasing order.
     long[] message_ids;
@@ -4169,7 +4585,7 @@ struct CopyMessagesMethod
     Nullable!(bool) remove_caption;
 }
 
-/++ Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_ids is known to the bot. The method is analogous to the method forwardMessages, but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an Array of MessageId of the sent messages is returned. +/
+/++ Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages, invoice messages, and widget messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_ids is known to the bot. The method is analogous to the method forwardMessages, but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an Array of MessageId of the sent messages is returned. +/
 MessageId[] copyMessages(BotApi api, CopyMessagesMethod method)
 {
     return api.callMethod!(MessageId[])(method);
@@ -4182,22 +4598,20 @@ struct SendPhotoMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20. More information on Sending Files »
-    string photo;
+    FileToSend photo;
     /// Photo caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing
     @serdeOptional
     Nullable!(string) caption;
@@ -4249,24 +4663,22 @@ struct SendLivePhotoMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Live photo video to send. The video must be no longer than 10 seconds and must not exceed 10 MB in size. Pass a file_id as String to send a video that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. More information on Sending Files ». Sending live photos by a URL is currently unsupported.
-    string live_photo;
+    FileToSend live_photo;
     /// The static photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. More information on Sending Files ». Sending live photos by a URL is currently unsupported.
-    string photo;
+    FileToSend photo;
     /// Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
     @serdeOptional
     Nullable!(string) caption;
@@ -4322,22 +4734,20 @@ struct SendAudioMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files »
-    string audio;
+    FileToSend audio;
     /// Audio caption, 0-1024 characters after entities parsing
     @serdeOptional
     Nullable!(string) caption;
@@ -4358,7 +4768,7 @@ struct SendAudioMethod
     Nullable!(string) title;
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     @serdeOptional
-    Nullable!(string) thumbnail;
+    Nullable!(FileToSend) thumbnail;
     /// Sends the message silently. Users will receive a notification with no sound.
     @serdeOptional
     Nullable!(bool) disable_notification;
@@ -4399,25 +4809,23 @@ struct SendDocumentMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files »
-    string document;
+    FileToSend document;
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     @serdeOptional
-    Nullable!(string) thumbnail;
+    Nullable!(FileToSend) thumbnail;
     /// Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
     @serdeOptional
     Nullable!(string) caption;
@@ -4466,22 +4874,20 @@ struct SendVideoMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Video to send. Pass a file_id as String to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. More information on Sending Files »
-    string video;
+    FileToSend video;
     /// Duration of sent video in seconds
     @serdeOptional
     Nullable!(long) duration;
@@ -4493,10 +4899,10 @@ struct SendVideoMethod
     Nullable!(long) height;
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     @serdeOptional
-    Nullable!(string) thumbnail;
+    Nullable!(FileToSend) thumbnail;
     /// Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
     @serdeOptional
-    Nullable!(string) cover;
+    Nullable!(FileToSend) cover;
     /// Start timestamp for the video in the message
     @serdeOptional
     Nullable!(long) start_timestamp;
@@ -4554,22 +4960,20 @@ struct SendAnimationMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Animation to send. Pass a file_id as String to send an animation that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an animation from the Internet, or upload a new animation using multipart/form-data. More information on Sending Files »
-    string animation;
+    FileToSend animation;
     /// Duration of sent animation in seconds
     @serdeOptional
     Nullable!(long) duration;
@@ -4581,7 +4985,7 @@ struct SendAnimationMethod
     Nullable!(long) height;
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     @serdeOptional
-    Nullable!(string) thumbnail;
+    Nullable!(FileToSend) thumbnail;
     /// Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
     @serdeOptional
     Nullable!(string) caption;
@@ -4633,22 +5037,20 @@ struct SendVoiceMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Audio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files »
-    string voice;
+    FileToSend voice;
     /// Voice message caption, 0-1024 characters after entities parsing
     @serdeOptional
     Nullable!(string) caption;
@@ -4690,29 +5092,27 @@ Message sendVoice(BotApi api, SendVoiceMethod method)
     return api.callMethod!(Message)(method);
 }
 
-/++ As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long. Use this method to send video messages. On success, the sent Message is returned. +/
+/++ Use this method to send a rounded square MPEG4 video of up to 1 minute long. On success, the sent Message is returned. +/
 struct SendVideoNoteMethod
 {
     mixin TelegramMethod!"/sendVideoNote";
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. More information on Sending Files ». Sending video notes by a URL is currently unsupported.
-    string video_note;
+    FileToSend video_note;
     /// Duration of sent video in seconds
     @serdeOptional
     Nullable!(long) duration;
@@ -4721,7 +5121,7 @@ struct SendVideoNoteMethod
     Nullable!(long) length;
     /// Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     @serdeOptional
-    Nullable!(string) thumbnail;
+    Nullable!(FileToSend) thumbnail;
     /// Sends the message silently. Users will receive a notification with no sound.
     @serdeOptional
     Nullable!(bool) disable_notification;
@@ -4745,8 +5145,127 @@ struct SendVideoNoteMethod
     Nullable!(ReplyMarkup) reply_markup;
 }
 
-/++ As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long. Use this method to send video messages. On success, the sent Message is returned. +/
+/++ Use this method to send a rounded square MPEG4 video of up to 1 minute long. On success, the sent Message is returned. +/
 Message sendVideoNote(BotApi api, SendVideoNoteMethod method)
+{
+    return api.callMethod!(Message)(method);
+}
+
+/++ Use this method to send a message with an HTML widget. Currently, in the production environment, widgets can be sent only to private chats, and sent widgets automatically have protected content and therefore can't be forwarded. On success, the sent Message is returned. +/
+struct SendWidgetMethod
+{
+    mixin TelegramMethod!"/sendWidget";
+    /// Unique identifier for the target chat or username of the target supergroup in the format @username
+    ChatId chat_id;
+    /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
+    @serdeOptional
+    Nullable!(long) message_thread_id;
+    /// HTML code of the widget, 1-32768 bytes. The code must not exceed 4096 bytes when compressed by zlib with the maximum compression level.
+    string html;
+    /// Width of the widget in logical pixels; omit if the widget must occupy the whole width of the message bubble. The width is clamped by the app to the range from 200 to the maximum width of the message bubble.
+    @serdeOptional
+    Nullable!(long) width;
+    /// Height of the widget in logical pixels; omit if the height of the widget isn't fixed. The height is clamped by the app to the range 50-600.
+    @serdeOptional
+    Nullable!(long) height;
+    /// Public data of the widget, 0-1024 bytes, which will be available wherever the widget is shown. If the widget is shared, then all messages with it will have the same public data.
+    @serdeOptional
+    Nullable!(string) public_data;
+    /// Data of the widget, which is specific to the message, 0-1024 bytes
+    @serdeOptional
+    Nullable!(string) chat_data;
+    /// Widget caption, 0-1024 characters after entities parsing
+    @serdeOptional
+    Nullable!(string) caption;
+    /// Mode for parsing entities in the widget caption. See formatting options for more details.
+    @serdeOptional
+    Nullable!(string) parse_mode;
+    /// A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+    @serdeOptional
+    Nullable!(MessageEntity[]) caption_entities;
+    /// Pass True if the caption must be shown above the widget
+    @serdeOptional
+    Nullable!(bool) show_caption_above_media;
+    /// Pass True to allow the widget to send queries to the bot
+    @serdeOptional
+    Nullable!(bool) allow_queries;
+    /// Pass True to create a shared widget, which can be sent again using the method sendSharedWidget
+    @serdeOptional
+    Nullable!(bool) is_shared;
+    /// Sends the message silently. Users will receive a notification with no sound.
+    @serdeOptional
+    Nullable!(bool) disable_notification;
+    /// Protects the contents of the sent message from forwarding and saving
+    @serdeOptional
+    Nullable!(bool) protect_content;
+    /// Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance.
+    @serdeOptional
+    Nullable!(bool) allow_paid_broadcast;
+    /// Unique identifier of the message effect to be added to the message; for private chats only
+    @serdeOptional
+    Nullable!(string) message_effect_id;
+    /// Description of the message to reply to
+    @serdeOptional
+    Nullable!(ReplyParameters) reply_parameters;
+    /// Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user.
+    @serdeOptional
+    Nullable!(ReplyMarkup) reply_markup;
+}
+
+/++ Use this method to send a message with an HTML widget. Currently, in the production environment, widgets can be sent only to private chats, and sent widgets automatically have protected content and therefore can't be forwarded. On success, the sent Message is returned. +/
+Message sendWidget(BotApi api, SendWidgetMethod method)
+{
+    return api.callMethod!(Message)(method);
+}
+
+/++ Use this method to send again a shared widget created by the bot. Currently, in the production environment, widgets can be sent only to private chats, and sent widgets automatically have protected content and therefore can't be forwarded. On success, the sent Message is returned. +/
+struct SendSharedWidgetMethod
+{
+    mixin TelegramMethod!"/sendSharedWidget";
+    /// Unique identifier for the target chat or username of the target supergroup in the format @username
+    ChatId chat_id;
+    /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
+    @serdeOptional
+    Nullable!(long) message_thread_id;
+    /// Unique identifier of the shared widget
+    string widget_id;
+    /// Data of the widget, which is specific to the message, 0-1024 bytes
+    @serdeOptional
+    Nullable!(string) chat_data;
+    /// Widget caption, 0-1024 characters after entities parsing
+    @serdeOptional
+    Nullable!(string) caption;
+    /// Mode for parsing entities in the widget caption. See formatting options for more details.
+    @serdeOptional
+    Nullable!(string) parse_mode;
+    /// A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+    @serdeOptional
+    Nullable!(MessageEntity[]) caption_entities;
+    /// Pass True if the caption must be shown above the widget
+    @serdeOptional
+    Nullable!(bool) show_caption_above_media;
+    /// Sends the message silently. Users will receive a notification with no sound.
+    @serdeOptional
+    Nullable!(bool) disable_notification;
+    /// Protects the contents of the sent message from forwarding and saving
+    @serdeOptional
+    Nullable!(bool) protect_content;
+    /// Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance.
+    @serdeOptional
+    Nullable!(bool) allow_paid_broadcast;
+    /// Unique identifier of the message effect to be added to the message; for private chats only
+    @serdeOptional
+    Nullable!(string) message_effect_id;
+    /// Description of the message to reply to
+    @serdeOptional
+    Nullable!(ReplyParameters) reply_parameters;
+    /// Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user.
+    @serdeOptional
+    Nullable!(ReplyMarkup) reply_markup;
+}
+
+/++ Use this method to send again a shared widget created by the bot. Currently, in the production environment, widgets can be sent only to private chats, and sent widgets automatically have protected content and therefore can't be forwarded. On success, the sent Message is returned. +/
+Message sendSharedWidget(BotApi api, SendSharedWidgetMethod method)
 {
     return api.callMethod!(Message)(method);
 }
@@ -4758,7 +5277,7 @@ struct SendPaidMediaMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username. If the chat is a channel, all Telegram Star proceeds from this media will be credited to the chat's balance. Otherwise, they will be credited to the bot's balance.
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username. If the chat is a channel, all Telegram Star proceeds from this media will be credited to the chat's balance. Otherwise, they will be credited to the bot's balance.
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -4818,7 +5337,7 @@ struct SendMediaGroupMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -4858,20 +5377,18 @@ struct SendLocationMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Latitude of the location
     double latitude;
     /// Longitude of the location
@@ -4924,20 +5441,18 @@ struct SendVenueMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Latitude of the venue
     double latitude;
     /// Longitude of the venue
@@ -4994,20 +5509,18 @@ struct SendContactMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Contact's phone number
     string phone_number;
     /// Contact's first name
@@ -5087,7 +5600,7 @@ struct SendDiceMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
@@ -5136,7 +5649,7 @@ struct SendMessageDraftMethod
     /// Unique identifier for the target message thread
     @serdeOptional
     Nullable!(long) message_thread_id;
-    /// Unique identifier of the message draft; must be non-zero. Changes to drafts with the same identifier are animated.
+    /// Unique identifier of the message draft; must be non-zero. Changes to drafts with the same identifier are animated. Otherwise, the draft is replaced without animation.
     long draft_id;
     /// Text of the message to be sent, 0-4096 characters after entities parsing. Pass an empty text to show a “Thinking…” placeholder.
     @serdeOptional
@@ -5147,6 +5660,12 @@ struct SendMessageDraftMethod
     /// A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
     @serdeOptional
     Nullable!(MessageEntity[]) entities;
+    /// Pass True to show the user a button to stop further drafts. The bot will receive an Update “stopped_message_generation” if the user presses the button.
+    @serdeOptional
+    Nullable!(bool) can_stop;
+    /// Pass True to keep the draft in the chat when the button is pressed. The draft will still disappear after a short time or if the bot sends a message. To fully preserve the partial draft, the bot should send it as a new message.
+    @serdeOptional
+    Nullable!(bool) keep_on_stop;
 }
 
 /++ Use this method to stream a partial message to a user while the message is being generated. Note that the streamed draft is ephemeral and acts as a temporary 30-second preview - once the output is finalized, you must call sendMessage with the complete message to persist it in the user's chat. Returns True on success. +/
@@ -5193,7 +5712,7 @@ bool sendChatAction(BotApi api, SendChatActionMethod method)
 struct SetMessageReactionMethod
 {
     mixin TelegramMethod!"/setMessageReaction";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username
     ChatId chat_id;
     /// Identifier of the target message. If the message belongs to a media group, the reaction is set to the first non-deleted message in the group instead.
     long message_id;
@@ -5417,6 +5936,9 @@ struct PromoteChatMemberMethod
     /// Pass True if the administrator can edit the tags of regular members; for groups and supergroups only
     @serdeOptional
     Nullable!(bool) can_manage_tags;
+    /// Pass True if the administrator can manage chat welcome messages or directly send them in the case of bots
+    @serdeOptional
+    Nullable!(bool) can_send_welcome_messages;
 }
 
 /++ Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate administrator rights. Pass False for all boolean parameters to demote a user. Returns True on success. +/
@@ -5893,6 +6415,12 @@ struct GetChatMemberMethod
 }
 
 
+struct GetChatShareThemeBackdropsMethod
+{
+    mixin TelegramMethod!"/getChatShareThemeBackdrops";
+}
+
+
 /++ Use this method to get the last messages from the personal chat (i.e., the chat currently added to their profile) of a given user. On success, an Array of Message objects is returned. +/
 struct GetUserPersonalChatMessagesMethod
 {
@@ -5945,7 +6473,7 @@ struct GetForumTopicIconStickersMethod
 }
 
 
-/++ Use this method to create a topic in a forum supergroup chat or a private chat with a user. In the case of a supergroup chat the bot must be an administrator in the chat for this to work and must have the can_manage_topics administrator right. Returns information about the created topic as a ForumTopic object. +/
+/++ Use this method to create a topic in a forum supergroup chat or a private chat with a user. In the case of a supergroup chat the bot must be an administrator in the chat for this to work and must have the can_manage_topics administrator right. In the case of a private chat, a link to the topic can be created in the format https://t.me/<bot_username>/<message_thread_id>; the link opens the topic only for the user. Returns information about the created topic as a ForumTopic object. +/
 struct CreateForumTopicMethod
 {
     mixin TelegramMethod!"/createForumTopic";
@@ -5961,7 +6489,7 @@ struct CreateForumTopicMethod
     Nullable!(string) icon_custom_emoji_id;
 }
 
-/++ Use this method to create a topic in a forum supergroup chat or a private chat with a user. In the case of a supergroup chat the bot must be an administrator in the chat for this to work and must have the can_manage_topics administrator right. Returns information about the created topic as a ForumTopic object. +/
+/++ Use this method to create a topic in a forum supergroup chat or a private chat with a user. In the case of a supergroup chat the bot must be an administrator in the chat for this to work and must have the can_manage_topics administrator right. In the case of a private chat, a link to the topic can be created in the format https://t.me/<bot_username>/<message_thread_id>; the link opens the topic only for the user. Returns information about the created topic as a ForumTopic object. +/
 ForumTopic createForumTopic(BotApi api, CreateForumTopicMethod method)
 {
     return api.callMethod!(ForumTopic)(method);
@@ -6158,7 +6686,7 @@ struct AnswerCallbackQueryMethod
     /// URL that will be opened by the user's client. If you have created a Game and accepted the conditions via @BotFather, specify the URL that opens your game - note that this will only work if the query comes from a callback_game button.Otherwise, you may use links like t.me/your_bot?start=XXXX that open your bot with a parameter.
     @serdeOptional
     Nullable!(string) url;
-    /// The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0.
+    /// The maximum amount of time in seconds that the result of the callback query may be cached client-side. Defaults to 0.
     @serdeOptional
     Nullable!(long) cache_time;
 }
@@ -6169,6 +6697,23 @@ Use this method to send answers to callback queries sent from inline keyboards. 
 Alternatively, the user can be redirected to the specified Game URL. For this option to work, you must first create a game for your bot via @BotFather and accept the terms. Otherwise, you may use links like t.me/your_bot?start=XXXX that open your bot with a parameter.
 +/
 bool answerCallbackQuery(BotApi api, AnswerCallbackQueryMethod method)
+{
+    return api.callMethod!(bool)(method);
+}
+
+/++ Use this method to send an answer to a query from a widget. The query must be answered within 15 seconds. The answer is received only by the widget that sent the query and doesn't change data of the widget; use editMessageWidgetData or editSharedWidgetData to change it. On success, True is returned. +/
+struct AnswerWidgetQueryMethod
+{
+    mixin TelegramMethod!"/answerWidgetQuery";
+    /// Unique identifier for the query to be answered
+    string widget_query_id;
+    /// Data to be returned to the widget, 0-1024 bytes
+    @serdeOptional
+    Nullable!(string) data;
+}
+
+/++ Use this method to send an answer to a query from a widget. The query must be answered within 15 seconds. The answer is received only by the widget that sent the query and doesn't change data of the widget; use editMessageWidgetData or editSharedWidgetData to change it. On success, True is returned. +/
+bool answerWidgetQuery(BotApi api, AnswerWidgetQueryMethod method)
 {
     return api.callMethod!(bool)(method);
 }
@@ -6532,7 +7077,7 @@ struct SendGiftMethod
     /// Required if chat_id is not specified. Unique identifier of the target user who will receive the gift.
     @serdeOptional
     Nullable!(long) user_id;
-    /// Required if user_id is not specified. Unique identifier for the chat or username of the channel (in the format @username) that will receive the gift.
+    /// Required if user_id is not specified. Unique identifier for the chat that will receive the gift or username of the channel in the format @username.
     @serdeOptional
     Nullable!(ChatId) chat_id;
     /// Identifier of the gift; limited gifts can't be sent to channel chats
@@ -6593,6 +7138,12 @@ struct VerifyUserMethod
     /// Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
     @serdeOptional
     Nullable!(string) custom_description;
+    /// Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
+    @serdeOptional
+    Nullable!(string) custom_description_parse_mode;
+    /// A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
+    @serdeOptional
+    Nullable!(MessageEntity[]) custom_description_entities;
 }
 
 /++ Verifies a user on behalf of the organization which is represented by the bot. Returns True on success. +/
@@ -6605,11 +7156,17 @@ bool verifyUser(BotApi api, VerifyUserMethod method)
 struct VerifyChatMethod
 {
     mixin TelegramMethod!"/verifyChat";
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username. Channel direct messages chats can't be verified.
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username. Channel direct messages chats can't be verified.
     ChatId chat_id;
     /// Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
     @serdeOptional
     Nullable!(string) custom_description;
+    /// Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
+    @serdeOptional
+    Nullable!(string) custom_description_parse_mode;
+    /// A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
+    @serdeOptional
+    Nullable!(MessageEntity[]) custom_description_entities;
 }
 
 /++ Verifies a chat on behalf of the organization which is represented by the bot. Returns True on success. +/
@@ -6943,6 +7500,20 @@ OwnedGifts getChatGifts(BotApi api, GetChatGiftsMethod method)
     return api.callMethod!(OwnedGifts)(method);
 }
 
+/++ Use this method to get information about a unique gift by its name. Returns a UniqueGift object on success. +/
+struct GetUniqueGiftMethod
+{
+    mixin TelegramMethod!"/getUniqueGift";
+    /// Unique name of the gift
+    string name;
+}
+
+/++ Use this method to get information about a unique gift by its name. Returns a UniqueGift object on success. +/
+UniqueGift getUniqueGift(BotApi api, GetUniqueGiftMethod method)
+{
+    return api.callMethod!(UniqueGift)(method);
+}
+
 /++ Converts a given regular gift to Telegram Stars. Requires the can_convert_gifts_to_stars business bot right. Returns True on success. +/
 struct ConvertGiftToStarsMethod
 {
@@ -6998,6 +7569,22 @@ struct TransferGiftMethod
 
 /++ Transfers an owned unique gift to another user. Requires the can_transfer_and_upgrade_gifts business bot right. Requires can_transfer_stars business bot right if the transfer is paid. Returns True on success. +/
 bool transferGift(BotApi api, TransferGiftMethod method)
+{
+    return api.callMethod!(bool)(method);
+}
+
+/++ Deletes a regular gift owned by a managed business account without receiving Telegram Stars for it. Requires the can_convert_gifts_to_stars business bot right. The gift can be deleted only if it isn't limited (the field total_count of the Gift is omitted) and wasn't refunded. Returns True on success. +/
+struct DeleteBusinessAccountGiftMethod
+{
+    mixin TelegramMethod!"/deleteBusinessAccountGift";
+    /// Unique identifier of the business connection
+    string business_connection_id;
+    /// Unique identifier of the regular gift that should be deleted
+    string owned_gift_id;
+}
+
+/++ Deletes a regular gift owned by a managed business account without receiving Telegram Stars for it. Requires the can_convert_gifts_to_stars business bot right. The gift can be deleted only if it isn't limited (the field total_count of the Gift is omitted) and wasn't refunded. Returns True on success. +/
+bool deleteBusinessAccountGift(BotApi api, DeleteBusinessAccountGiftMethod method)
 {
     return api.callMethod!(bool)(method);
 }

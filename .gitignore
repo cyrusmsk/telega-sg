@@ -29,3 +29,6 @@ docs.json
 
 /examples/.cache
 /examples/pollbot/pollbot
+
+# Generator build output
+/generator/bin

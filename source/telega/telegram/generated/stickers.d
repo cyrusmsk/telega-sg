@@ -1,12 +1,12 @@
-// Generated from Telegram Bot API 10.2 documentation by telega-api-generator.
+// Generated from Telegram Bot API 10.4 documentation by telega-api-generator.
 // Do not edit manually!
 
 module telega.telegram.generated.stickers;
 
 import asdf.serialization : serdeOptional;
 import std.typecons : Nullable;
-import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod;
-import telega.serialization : JsonableAlgebraicProxy;
+import telega.botapi : BotApi, ChatId, HTTPMethod, TelegramMethod, InputFile, FileToSend;
+import telega.serialization : JsonableAlgebraicProxy, Ref, SerdeDiscriminator;
 import telega.telegram.generated.basic;
 
 /++ This object represents a sticker. +/
@@ -105,22 +105,20 @@ struct SendStickerMethod
     /// Unique identifier of the business connection on behalf of which the message will be sent
     @serdeOptional
     Nullable!(string) business_connection_id;
-    /// Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
-    ChatId chat_id;
+    /// Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
+    @serdeOptional
+    Nullable!(ChatId) chat_id;
     /// Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only
     @serdeOptional
     Nullable!(long) message_thread_id;
     /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
     @serdeOptional
     Nullable!(long) direct_messages_topic_id;
-    /// For outgoing ephemeral messages, unique identifier of the user who will receive the message; for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially if they are offline. See ephemeral message sending for more details.
+    /// A JSON-serialized object containing the parameters of the ephemeral message to send
     @serdeOptional
-    Nullable!(long) receiver_user_id;
-    /// For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
-    @serdeOptional
-    Nullable!(string) callback_query_id;
+    Nullable!(EphemeralMessageParameters) ephemeral_message_parameters;
     /// Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a .WEBP sticker from the Internet, or upload a new .WEBP, .TGS, or .WEBM sticker using multipart/form-data. More information on Sending Files ». Video and animated stickers can't be sent via an HTTP URL.
-    string sticker;
+    FileToSend sticker;
     /// Emoji associated with the sticker; only for just uploaded stickers
     @serdeOptional
     Nullable!(string) emoji;
@@ -369,7 +367,7 @@ struct SetStickerSetThumbnailMethod
     long user_id;
     /// A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animation-requirements for animated sticker technical requirements), or a .WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-requirements for video sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files ». Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.
     @serdeOptional
-    Nullable!(string) thumbnail;
+    Nullable!(FileToSend) thumbnail;
     /// Format of the thumbnail, must be one of “static” for a .WEBP or .PNG image, “animated” for a .TGS animation, or “video” for a .WEBM video
     string format;
 }
